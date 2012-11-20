@@ -1,0 +1,1410 @@
+<?xml version="1.0"?>
+<project xmlns="http://autometrix.biz/psxml" xmlns:ui="http://autometrix.biz/psxml/ui" version="1.0">
+  <pattern>
+    <st d="0x002f (/)"/>
+    <v d="0,0"/>
+    <attrib/>
+    <line>
+      <e pt="ref"/>
+      <va d="0,0 0,1"/>
+    </line>
+    <line>
+      <e pt="ref"/>
+      <va d="0,0 0.544,0"/>
+    </line>
+    <line>
+      <e/>
+      <va d="0.087,0 0.462,1"/>
+    </line>
+  </pattern>
+  <pattern>
+    <st d="0x002e (.)"/>
+    <v d="0.858,0"/>
+    <attrib/>
+    <line>
+      <e pt="ref"/>
+      <va d="0,0 0,1"/>
+    </line>
+    <line>
+      <e pt="ref"/>
+      <va d="0,0 0.203,0"/>
+    </line>
+    <line>
+      <e/>
+      <va d="0.083,0.085 0.125,0.085"/>
+    </line>
+  </pattern>
+  <pattern>
+    <st d="0x002d (-)"/>
+    <v d="1.72,0"/>
+    <attrib/>
+    <line>
+      <e pt="ref"/>
+      <va d="0,0 0,1"/>
+    </line>
+    <line>
+      <e pt="ref"/>
+      <va d="0,0 0.538,0"/>
+    </line>
+    <line>
+      <e/>
+      <va d="0.083,0.085 0.125,0.085"/>
+    </line>
+  </pattern>
+  <pattern>
+    <st d="0x002b (+)"/>
+    <v d="2.57,0"/>
+    <attrib/>
+    <line>
+      <e pt="ref"/>
+      <va d="0,0 0,1"/>
+    </line>
+    <line>
+      <e pt="ref"/>
+      <va d="0,0 0.538,0"/>
+    </line>
+    <line>
+      <e/>
+      <va d="0.083,0.5 0.458,0.5"/>
+    </line>
+    <line>
+      <e/>
+      <va d="0.271,0.776 0.271,0.213"/>
+    </line>
+  </pattern>
+  <pattern>
+    <st d="0x002a (*)"/>
+    <v d="3.43,0"/>
+    <attrib/>
+    <line>
+      <e pt="ref"/>
+      <va d="0,0 0,1"/>
+    </line>
+    <line>
+      <e pt="ref"/>
+      <va d="0,0 0.329,0"/>
+    </line>
+    <line>
+      <e/>
+      <va d="0.063,0.628 0.271,0.441"/>
+    </line>
+    <line>
+      <e/>
+      <va d="0.271,0.628 0.063,0.441"/>
+    </line>
+    <line>
+      <e/>
+      <va d="0.167,0.722 0.167,0.347"/>
+    </line>
+  </pattern>
+  <pattern>
+    <st d="0x0029 ())"/>
+    <v d="4.29,0"/>
+    <attrib/>
+    <line>
+      <e pt="ref"/>
+      <va d="0,0 0,1"/>
+    </line>
+    <line>
+      <e pt="ref"/>
+      <va d="0,0 0.287,0"/>
+    </line>
+    <arc>
+      <e/>
+      <v d="-0.71,0.5"/>
+      <sa d="0.929 -5.71 -1.14"/>
+    </arc>
+  </pattern>
+  <pattern>
+    <st d="0x0028 (()"/>
+    <v d="5.15,0"/>
+    <attrib/>
+    <line>
+      <e pt="ref"/>
+      <va d="0,0 0,1"/>
+    </line>
+    <line>
+      <e pt="ref"/>
+      <va d="0,0 0.287,0"/>
+    </line>
+    <arc>
+      <e/>
+      <v d="1,0.5"/>
+      <sa d="0.929 -2.57 -1.14"/>
+    </arc>
+  </pattern>
+  <pattern>
+    <st d="0x0027 (')"/>
+    <v d="6,0"/>
+    <attrib/>
+    <line>
+      <e pt="ref"/>
+      <va d="0,0 0,1"/>
+    </line>
+    <line>
+      <e pt="ref"/>
+      <va d="0,0 0.203,0"/>
+    </line>
+    <line>
+      <e/>
+      <va d="0.08,0.658 0.126,0.876"/>
+    </line>
+  </pattern>
+  <pattern>
+    <st d="0x0026 (&amp;)"/>
+    <v d="6.86,0"/>
+    <attrib/>
+    <line>
+      <e pt="ref"/>
+      <va d="0,0 0,1"/>
+    </line>
+    <line>
+      <e pt="ref"/>
+      <va d="0,0 0.538,0"/>
+    </line>
+    <bez>
+      <e/>
+      <va>
+        <va d="0.544,0.298 0.56,-0.017 0.135,-0.112 0.089,0.2 0.054,0.438 0.382,0.553 0.454,0.748 0.483,0.825 0.44,0.975 0.364,0.974"/>
+        <va d="0.248,0.973 0.237,0.755 0.304,0.613 0.396,0.41 0.488,0.211 0.59,0.015"/>
+      </va>
+    </bez>
+  </pattern>
+  <pattern>
+    <st d="0x0025 (%)"/>
+    <v d="7.72,0"/>
+    <attrib/>
+    <line>
+      <e pt="ref"/>
+      <va d="0,0 0,1"/>
+    </line>
+    <line>
+      <e pt="ref"/>
+      <va d="0,0 0.496,0"/>
+    </line>
+    <line>
+      <e/>
+      <va d="0.071,0.68 0.167,0.848"/>
+    </line>
+    <arc>
+      <e/>
+      <v d="0.302,0.971"/>
+      <sa d="0.183 3.88 1.67"/>
+    </arc>
+    <line>
+      <e/>
+      <va d="0.438,0.848 0.063,0.192"/>
+    </line>
+    <line>
+      <e/>
+      <va d="0.314,0.216 0.41,0.385"/>
+    </line>
+  </pattern>
+  <pattern>
+    <st d="0x0024 ($)"/>
+    <v d="8.58,0"/>
+    <attrib/>
+    <line>
+      <e pt="ref"/>
+      <va d="0,0 0,1"/>
+    </line>
+    <line>
+      <e pt="ref"/>
+      <va d="0,0 0.412,0"/>
+    </line>
+    <bez>
+      <e/>
+      <va d="0.115,0.233 0.234,0.051 0.573,0.147 0.569,0.293 0.562,0.531 0.083,0.541 0.096,0.713 0.111,0.899 0.437,0.937 0.53,0.783"/>
+    </bez>
+    <line>
+      <e/>
+      <va d="0.207,0.95 0.207,0.05"/>
+    </line>
+  </pattern>
+  <pattern>
+    <st d="0x0023 (#)"/>
+    <v d="0,1.1"/>
+    <attrib/>
+    <line>
+      <e pt="ref"/>
+      <va d="0,0 0,1"/>
+    </line>
+    <line>
+      <e pt="ref"/>
+      <va d="0,0 0.434,0"/>
+    </line>
+    <line>
+      <e/>
+      <va d="0.092,0.035 0.23,0.976"/>
+    </line>
+    <line>
+      <e/>
+      <va d="0.355,0.976 0.217,0.035"/>
+    </line>
+    <line>
+      <e/>
+      <va d="0.063,0.382 0.355,0.382"/>
+    </line>
+    <line>
+      <e/>
+      <va d="0.376,0.57 0.084,0.57"/>
+    </line>
+  </pattern>
+  <pattern>
+    <st d="0x0022 (&quot;)"/>
+    <v d="0.858,1.1"/>
+    <attrib/>
+    <line>
+      <e pt="ref"/>
+      <va d="0,0 0,1"/>
+    </line>
+    <line>
+      <e pt="ref"/>
+      <va d="0,0 0.329,0"/>
+    </line>
+    <line>
+      <e/>
+      <va d="0.083,0.809 0.083,0.59"/>
+    </line>
+    <line>
+      <e/>
+      <va d="0.25,0.59 0.25,0.809"/>
+    </line>
+  </pattern>
+  <pattern>
+    <st d="0x0021 (!)"/>
+    <v d="1.72,1.1"/>
+    <attrib/>
+    <line>
+      <e pt="ref"/>
+      <va d="0,0 0,1"/>
+    </line>
+    <line>
+      <e pt="ref"/>
+      <va d="0,0 0.203,0"/>
+    </line>
+    <line>
+      <e/>
+      <va d="0.042,0.078 0.153,0.189"/>
+    </line>
+    <poly>
+      <e/>
+      <va d="0.105,0.238 0.056,0.894 0.153,0.894 0.105,0.238"/>
+    </poly>
+  </pattern>
+  <pattern>
+    <st d="0x003f (?)"/>
+    <v d="2.57,1.1"/>
+    <attrib/>
+    <line>
+      <e pt="ref"/>
+      <va d="0,0 0,1"/>
+    </line>
+    <line>
+      <e pt="ref"/>
+      <va d="0,0 0.371,0"/>
+    </line>
+    <bez>
+      <e/>
+      <va d="0.13,0.694 0.146,0.814 0.222,0.88 0.327,0.883 0.454,0.887 0.536,0.789 0.537,0.682 0.538,0.501 0.285,0.459 0.283,0.23"/>
+    </bez>
+    <line>
+      <e/>
+      <va d="0.334,0.177 0.26,0.103"/>
+    </line>
+  </pattern>
+  <pattern>
+    <st d="0x003e (&gt;)"/>
+    <v d="3.43,1.1"/>
+    <attrib/>
+    <line>
+      <e pt="ref"/>
+      <va d="0,0 0,1"/>
+    </line>
+    <line>
+      <e pt="ref"/>
+      <va d="0,0 0.496,0"/>
+    </line>
+    <poly>
+      <e/>
+      <va d="0.083,0.785 0.417,0.504 0.083,0.222"/>
+    </poly>
+  </pattern>
+  <pattern>
+    <st d="0x003d (=)"/>
+    <v d="4.29,1.1"/>
+    <attrib/>
+    <line>
+      <e pt="ref"/>
+      <va d="0,0 0,1"/>
+    </line>
+    <line>
+      <e pt="ref"/>
+      <va d="0,0 0.538,0"/>
+    </line>
+    <line>
+      <e/>
+      <va d="0.083,0.421 0.458,0.421"/>
+    </line>
+    <line>
+      <e/>
+      <va d="0.083,0.608 0.458,0.608"/>
+    </line>
+  </pattern>
+  <pattern>
+    <st d="0x003c (&lt;)"/>
+    <v d="5.15,1.1"/>
+    <attrib/>
+    <line>
+      <e pt="ref"/>
+      <va d="0,0 0,1"/>
+    </line>
+    <line>
+      <e pt="ref"/>
+      <va d="0,0 0.496,0"/>
+    </line>
+    <poly>
+      <e/>
+      <va d="0.417,0.778 0.083,0.497 0.417,0.216"/>
+    </poly>
+  </pattern>
+  <pattern>
+    <st d="0x003b (;)"/>
+    <v d="6,1.1"/>
+    <attrib/>
+    <line>
+      <e pt="ref"/>
+      <va d="0,0 0,1"/>
+    </line>
+    <line>
+      <e pt="ref"/>
+      <va d="0,0 0.203,0"/>
+    </line>
+    <line>
+      <e/>
+      <va d="0.083,0.654 0.125,0.654"/>
+    </line>
+    <poly>
+      <e/>
+      <va d="0.083,0.279 0.125,0.279 0.083,0.15"/>
+    </poly>
+  </pattern>
+  <pattern>
+    <st d="0x003a (:)"/>
+    <v d="6.86,1.1"/>
+    <attrib/>
+    <line>
+      <e pt="ref"/>
+      <va d="0,0 0,1"/>
+    </line>
+    <line>
+      <e pt="ref"/>
+      <va d="0,0 0.203,0"/>
+    </line>
+    <line>
+      <e/>
+      <va d="0.083,0.277 0.125,0.277"/>
+    </line>
+    <line>
+      <e/>
+      <va d="0.083,0.652 0.125,0.652"/>
+    </line>
+  </pattern>
+  <pattern>
+    <st d="0x0039 (9)"/>
+    <v d="7.72,1.1"/>
+    <attrib/>
+    <line>
+      <e pt="ref"/>
+      <va d="0,0 0,1"/>
+    </line>
+    <line>
+      <e pt="ref"/>
+      <va d="0,0 0.596,0"/>
+    </line>
+    <arc>
+      <e/>
+      <v d="0.324,0.681"/>
+      <sa d="0.325 -0.362 -5.7"/>
+    </arc>
+    <arc>
+      <e/>
+      <v d="0.0201,0.59"/>
+      <sa d="0.642 -6.03 -1.42"/>
+    </arc>
+  </pattern>
+  <pattern>
+    <st d="0x0038 (8)"/>
+    <v d="8.58,1.1"/>
+    <attrib/>
+    <line>
+      <e pt="ref"/>
+      <va d="0,0 0,1"/>
+    </line>
+    <line>
+      <e pt="ref"/>
+      <va d="0,0 0.596,0"/>
+    </line>
+    <arc>
+      <e closed="t"/>
+      <v d="0.33,0.766"/>
+      <s d="0.243"/>
+    </arc>
+    <arc>
+      <e/>
+      <v d="0.25,0.294"/>
+      <sa d="0.25 1.63 1.48"/>
+    </arc>
+    <arc>
+      <e/>
+      <v d="0.33,0.332"/>
+      <sa d="0.332 3.23 2.96"/>
+    </arc>
+    <arc>
+      <e/>
+      <v d="0.401,0.284"/>
+      <sa d="0.261 0.0674 1.41"/>
+    </arc>
+  </pattern>
+  <pattern>
+    <st d="0x0037 (7)"/>
+    <v d="0,2.2"/>
+    <attrib/>
+    <line>
+      <e pt="ref"/>
+      <va d="0,0 0,1"/>
+    </line>
+    <line>
+      <e pt="ref"/>
+      <va d="0,0 0.596,0"/>
+    </line>
+    <poly>
+      <e/>
+      <va d="0.088,1 0.533,1 0.215,0"/>
+    </poly>
+  </pattern>
+  <pattern>
+    <st d="0x0036 (6)"/>
+    <v d="0.858,2.2"/>
+    <attrib/>
+    <line>
+      <e pt="ref"/>
+      <va d="0,0 0,1"/>
+    </line>
+    <line>
+      <e pt="ref"/>
+      <va d="0,0 0.596,0"/>
+    </line>
+    <arc>
+      <e/>
+      <v d="0.643,0.414"/>
+      <sa d="0.635 1.96 1.45"/>
+    </arc>
+    <arc>
+      <e/>
+      <v d="0.343,0.318"/>
+      <sa d="0.319 3.38 5.69"/>
+    </arc>
+  </pattern>
+  <pattern>
+    <st d="0x0035 (5)"/>
+    <v d="1.72,2.2"/>
+    <attrib/>
+    <line>
+      <e pt="ref"/>
+      <va d="0,0 0,1"/>
+    </line>
+    <line>
+      <e pt="ref"/>
+      <va d="0,0 0.596,0"/>
+    </line>
+    <poly>
+      <e/>
+      <va d="0.521,1 0.068,1 0.068,0.537"/>
+    </poly>
+    <arc>
+      <e/>
+      <v d="0.316,0.32"/>
+      <sa d="0.329 -3.86 -5.28"/>
+    </arc>
+  </pattern>
+  <pattern>
+    <st d="0x0034 (4)"/>
+    <v d="2.57,2.2"/>
+    <attrib/>
+    <line>
+      <e pt="ref"/>
+      <va d="0,0 0,1"/>
+    </line>
+    <line>
+      <e pt="ref"/>
+      <va d="0,0 0.596,0"/>
+    </line>
+    <poly>
+      <e/>
+      <va d="0.396,0 0.396,1 0.078,0.334 0.554,0.334"/>
+    </poly>
+  </pattern>
+  <pattern>
+    <st d="0x0033 (3)"/>
+    <v d="3.43,2.2"/>
+    <attrib/>
+    <line>
+      <e pt="ref"/>
+      <va d="0,0 0,1"/>
+    </line>
+    <line>
+      <e pt="ref"/>
+      <va d="0,0 0.596,0"/>
+    </line>
+    <poly>
+      <e/>
+      <va d="0.135,1 0.484,1 0.268,0.636"/>
+    </poly>
+    <arc>
+      <e/>
+      <v d="0.309,0.316"/>
+      <sa d="0.323 -4.58 -4.55"/>
+    </arc>
+  </pattern>
+  <pattern>
+    <st d="0x0032 (2)"/>
+    <v d="4.29,2.2"/>
+    <attrib/>
+    <line>
+      <e pt="ref"/>
+      <va d="0,0 0,1"/>
+    </line>
+    <line>
+      <e pt="ref"/>
+      <va d="0,0 0.596,0"/>
+    </line>
+    <arc>
+      <e/>
+      <v d="0.298,0.685"/>
+      <sa d="0.31 -3.5 -3.74"/>
+    </arc>
+    <line>
+      <e/>
+      <va d="0.475,0.431 0,0"/>
+    </line>
+    <line>
+      <e/>
+      <va d="0,0 0.524,0"/>
+    </line>
+  </pattern>
+  <pattern>
+    <st d="0x0031 (1)"/>
+    <v d="5.15,2.2"/>
+    <attrib/>
+    <line>
+      <e pt="ref"/>
+      <va d="0,0 0,1"/>
+    </line>
+    <line>
+      <e pt="ref"/>
+      <va d="0,0 0.596,0"/>
+    </line>
+    <poly>
+      <e/>
+      <va d="0.161,0.808 0.32,1 0.32,0"/>
+    </poly>
+  </pattern>
+  <pattern>
+    <st d="0x0030 (0)"/>
+    <v d="6,2.2"/>
+    <attrib/>
+    <line>
+      <e pt="ref"/>
+      <va d="0,0 0,1"/>
+    </line>
+    <line>
+      <e pt="ref"/>
+      <va d="0,0 0.596,0"/>
+    </line>
+    <bez>
+      <e/>
+      <va>
+        <va d="0.317,0.005 0.524,0.006 0.636,0.243 0.636,0.496 0.636,0.738 0.526,0.99 0.317,0.99 0.108,0.99 0,0.738 0,0.5"/>
+        <va d="0,0.243 0.11,0.006 0.317,0.005"/>
+      </va>
+    </bez>
+    <line>
+      <e/>
+      <va d="0.17,0.051 0.424,0.956"/>
+    </line>
+  </pattern>
+  <pattern>
+    <st d="0x004f (O)"/>
+    <v d="6.86,2.2"/>
+    <attrib/>
+    <line>
+      <e pt="ref"/>
+      <va d="0,0 0,1"/>
+    </line>
+    <line>
+      <e pt="ref"/>
+      <va d="0,0 0.694,0"/>
+    </line>
+    <bez>
+      <e/>
+      <va>
+        <va d="0.698,0.495 0.698,0.739 0.588,1 0.338,1 0.114,1 0,0.728 0,0.495 0,0.273 0.129,0 0.354,0"/>
+        <va d="0.578,0 0.698,0.278 0.698,0.495"/>
+      </va>
+    </bez>
+  </pattern>
+  <pattern>
+    <st d="0x004e (N)"/>
+    <v d="7.72,2.2"/>
+    <attrib/>
+    <line>
+      <e pt="ref"/>
+      <va d="0,0 0,1"/>
+    </line>
+    <line>
+      <e pt="ref"/>
+      <va d="0,0 0.694,0"/>
+    </line>
+    <poly>
+      <e/>
+      <va d="0.127,0 0.127,1 0.572,0 0.572,1"/>
+    </poly>
+  </pattern>
+  <pattern>
+    <st d="0x004d (M)"/>
+    <v d="8.58,2.2"/>
+    <attrib/>
+    <line>
+      <e pt="ref"/>
+      <va d="0,0 0,1"/>
+    </line>
+    <line>
+      <e pt="ref"/>
+      <va d="0,0 0.758,0"/>
+    </line>
+    <poly>
+      <e/>
+      <va d="0.127,0 0.127,1 0.381,0.237 0.635,1 0.635,0"/>
+    </poly>
+  </pattern>
+  <pattern>
+    <st d="0x004c (L)"/>
+    <v d="0,3.3"/>
+    <attrib/>
+    <line>
+      <e pt="ref"/>
+      <va d="0,0 0,1"/>
+    </line>
+    <line>
+      <e pt="ref"/>
+      <va d="0,0 0.536,0"/>
+    </line>
+    <poly>
+      <e/>
+      <va d="0.08,1 0.08,0 0.461,0"/>
+    </poly>
+  </pattern>
+  <pattern>
+    <st d="0x004b (K)"/>
+    <v d="0.858,3.3"/>
+    <attrib/>
+    <line>
+      <e pt="ref"/>
+      <va d="0,0 0,1"/>
+    </line>
+    <line>
+      <e pt="ref"/>
+      <va d="0,0 0.663,0"/>
+    </line>
+    <line>
+      <e/>
+      <va d="0.111,0 0.111,1"/>
+    </line>
+    <line>
+      <e/>
+      <va d="0.111,0.333 0.556,1"/>
+    </line>
+    <line>
+      <e/>
+      <va d="0.27,0.571 0.556,0"/>
+    </line>
+  </pattern>
+  <pattern>
+    <st d="0x004a (J)"/>
+    <v d="1.72,3.3"/>
+    <attrib/>
+    <line>
+      <e pt="ref"/>
+      <va d="0,0 0,1"/>
+    </line>
+    <line>
+      <e pt="ref"/>
+      <va d="0,0 0.487,0"/>
+    </line>
+    <line>
+      <e/>
+      <va d="0.089,0.238 0.088,0.16"/>
+    </line>
+    <arc>
+      <e/>
+      <v d="0.247,0.159"/>
+      <sa d="0.159 3.13 3.16"/>
+    </arc>
+    <line>
+      <e/>
+      <va d="0.405,0.16 0.405,1"/>
+    </line>
+  </pattern>
+  <pattern>
+    <st d="0x0049 (I)"/>
+    <v d="2.57,3.3"/>
+    <attrib/>
+    <line>
+      <e pt="ref"/>
+      <va d="0,0 0,1"/>
+    </line>
+    <line>
+      <e pt="ref"/>
+      <va d="0,0 0.25,0"/>
+    </line>
+    <line>
+      <e/>
+      <va d="0.127,1 0.127,0"/>
+    </line>
+  </pattern>
+  <pattern>
+    <st d="0x0048 (H)"/>
+    <v d="3.43,3.3"/>
+    <attrib/>
+    <line>
+      <e pt="ref"/>
+      <va d="0,0 0,1"/>
+    </line>
+    <line>
+      <e pt="ref"/>
+      <va d="0,0 0.694,0"/>
+    </line>
+    <line>
+      <e/>
+      <va d="0.126,0 0.126,1"/>
+    </line>
+    <line>
+      <e/>
+      <va d="0.126,0.524 0.571,0.524"/>
+    </line>
+    <line>
+      <e/>
+      <va d="0.571,1 0.571,0"/>
+    </line>
+  </pattern>
+  <pattern>
+    <st d="0x0047 (G)"/>
+    <v d="4.29,3.3"/>
+    <attrib/>
+    <line>
+      <e pt="ref"/>
+      <va d="0,0 0,1"/>
+    </line>
+    <line>
+      <e pt="ref"/>
+      <va d="0,0 0.663,0"/>
+    </line>
+    <poly>
+      <e/>
+      <va d="0.43,0.497 0.68,0.497 0.68,0.212"/>
+    </poly>
+    <bez>
+      <e/>
+      <va>
+        <va d="0.68,0.212 0.628,0.078 0.529,-0.004 0.399,0 0.158,0.009 0,0.269 0,0.505 0.003,0.71 0.102,0.936 0.303,0.992"/>
+        <va d="0.434,1.03 0.574,0.97 0.654,0.858"/>
+      </va>
+    </bez>
+  </pattern>
+  <pattern>
+    <st d="0x0046 (F)"/>
+    <v d="5.15,3.3"/>
+    <attrib/>
+    <line>
+      <e pt="ref"/>
+      <va d="0,0 0,1"/>
+    </line>
+    <line>
+      <e pt="ref"/>
+      <va d="0,0 0.567,0"/>
+    </line>
+    <poly>
+      <e/>
+      <va d="0.079,0 0.079,1 0.492,1"/>
+    </poly>
+    <line>
+      <e/>
+      <va d="0.079,0.524 0.333,0.524"/>
+    </line>
+  </pattern>
+  <pattern>
+    <st d="0x0045 (E)"/>
+    <v d="6,3.3"/>
+    <attrib/>
+    <line>
+      <e pt="ref"/>
+      <va d="0,0 0,1"/>
+    </line>
+    <line>
+      <e pt="ref"/>
+      <va d="0,0 0.599,0"/>
+    </line>
+    <poly>
+      <e/>
+      <va d="0.508,0 0.095,0 0.095,1 0.508,1"/>
+    </poly>
+    <line>
+      <e/>
+      <va d="0.095,0.524 0.349,0.524"/>
+    </line>
+  </pattern>
+  <pattern>
+    <st d="0x0044 (D)"/>
+    <v d="6.86,3.3"/>
+    <attrib/>
+    <line>
+      <e pt="ref"/>
+      <va d="0,0 0,1"/>
+    </line>
+    <line>
+      <e pt="ref"/>
+      <va d="0,0 0.663,0"/>
+    </line>
+    <poly>
+      <e/>
+      <va d="0.254,0 0.111,0 0.111,1 0.254,1"/>
+    </poly>
+    <bez>
+      <e/>
+      <va d="0.254,1 0.536,1 0.691,0.773 0.691,0.533 0.691,0.264 0.536,0 0.254,0"/>
+    </bez>
+  </pattern>
+  <pattern>
+    <st d="0x0043 (C)"/>
+    <v d="7.72,3.3"/>
+    <attrib/>
+    <line>
+      <e pt="ref"/>
+      <va d="0,0 0,1"/>
+    </line>
+    <line>
+      <e pt="ref"/>
+      <va d="0,0 0.663,0"/>
+    </line>
+    <bez>
+      <e/>
+      <va>
+        <va d="0.654,0.848 0.601,0.954 0.48,1.01 0.362,1 0.138,0.991 0.00188,0.751 0.001,0.523 0,0.264 0.099,0.064 0.305,0.011"/>
+        <va d="0.447,-0.026 0.618,0.04 0.694,0.157"/>
+      </va>
+    </bez>
+  </pattern>
+  <pattern>
+    <st d="0x0042 (B)"/>
+    <v d="8.58,3.3"/>
+    <attrib/>
+    <line>
+      <e pt="ref"/>
+      <va d="0,0 0,1"/>
+    </line>
+    <line>
+      <e pt="ref"/>
+      <va d="0,0 0.663,0"/>
+    </line>
+    <poly>
+      <e/>
+      <va d="0.397,0 0.111,0 0.111,1 0.353,1"/>
+    </poly>
+    <arc>
+      <e/>
+      <v d="0.278,0.753"/>
+      <sa d="0.258 -5.01 -2.37"/>
+    </arc>
+    <arc>
+      <e/>
+      <v d="0.296,0.262"/>
+      <sa d="0.281 -5.08 -2.41"/>
+    </arc>
+    <line>
+      <e/>
+      <va d="0.111,0.524 0.397,0.524"/>
+    </line>
+  </pattern>
+  <pattern>
+    <st d="0x0041 (A)"/>
+    <v d="0,4.4"/>
+    <attrib/>
+    <line>
+      <e pt="ref"/>
+      <va d="0,0 0,1"/>
+    </line>
+    <line>
+      <e pt="ref"/>
+      <va d="0,0 0.567,0"/>
+    </line>
+    <poly>
+      <e/>
+      <va d="0.032,0 0.286,1 0.54,0"/>
+    </poly>
+    <line>
+      <e/>
+      <va d="0.127,0.333 0.445,0.333"/>
+    </line>
+  </pattern>
+  <pattern>
+    <st d="0x0040 (@)"/>
+    <v d="0.858,4.4"/>
+    <attrib/>
+    <line>
+      <e pt="ref"/>
+      <va d="0,0 0,1"/>
+    </line>
+    <line>
+      <e pt="ref"/>
+      <va d="0,0 0.559,0"/>
+    </line>
+    <bez>
+      <e/>
+      <va d="0.456,0.462 0.386,0.35 0.227,0.35 0.204,0.464 0.178,0.598 0.363,0.785 0.466,0.675 0.516,0.622 0.429,0.473 0.487,0.39"/>
+    </bez>
+    <bez>
+      <e/>
+      <va>
+        <va d="0.487,0.39 0.592,0.388 0.649,0.499 0.664,0.6 0.688,0.765 0.56,0.921 0.4,0.932 0.278,0.941 0.165,0.881 0.095,0.78"/>
+        <va d="-0.03,0.602 -0.015,0.312 0.147,0.197 0.259,0.116 0.436,0.114 0.568,0.184"/>
+      </va>
+    </bez>
+  </pattern>
+  <pattern>
+    <st d="0x005f (_)"/>
+    <v d="1.72,4.4"/>
+    <attrib/>
+    <line>
+      <e pt="ref"/>
+      <va d="0,0 0,1"/>
+    </line>
+    <line>
+      <e pt="ref"/>
+      <va d="0,0 0.287,0"/>
+    </line>
+    <line>
+      <e/>
+      <va d="0,0.073 0.292,0.073"/>
+    </line>
+  </pattern>
+  <pattern>
+    <st d="0x005e (^)"/>
+    <v d="2.57,4.4"/>
+    <attrib/>
+    <line>
+      <e pt="ref"/>
+      <va d="0,0 0,1"/>
+    </line>
+    <line>
+      <e pt="ref"/>
+      <va d="0,0 0.454,0"/>
+    </line>
+    <poly>
+      <e/>
+      <va d="0.063,0.61 0.232,0.832 0.396,0.61"/>
+    </poly>
+  </pattern>
+  <pattern>
+    <st d="0x005d (])"/>
+    <v d="3.43,4.4"/>
+    <attrib/>
+    <line>
+      <e pt="ref"/>
+      <va d="0,0 0,1"/>
+    </line>
+    <line>
+      <e pt="ref"/>
+      <va d="0,0 0.287,0"/>
+    </line>
+    <poly>
+      <e/>
+      <va d="0.073,0.027 0.219,0.027 0.219,0.965 0.073,0.965"/>
+    </poly>
+  </pattern>
+  <pattern>
+    <st d="0x005c (\)"/>
+    <v d="4.29,4.4"/>
+    <attrib/>
+    <line>
+      <e pt="ref"/>
+      <va d="0,0 0,1"/>
+    </line>
+    <line>
+      <e pt="ref"/>
+      <va d="0,0 0.287,0"/>
+    </line>
+    <line>
+      <e/>
+      <va d="0,0.871 0.292,0.121"/>
+    </line>
+  </pattern>
+  <pattern>
+    <st d="0x005b ([)"/>
+    <v d="5.15,4.4"/>
+    <attrib/>
+    <line>
+      <e pt="ref"/>
+      <va d="0,0 0,1"/>
+    </line>
+    <line>
+      <e pt="ref"/>
+      <va d="0,0 0.287,0"/>
+    </line>
+    <poly>
+      <e/>
+      <va d="0.219,0.965 0.073,0.965 0.073,0.027 0.219,0.027"/>
+    </poly>
+  </pattern>
+  <pattern>
+    <st d="0x005a (Z)"/>
+    <v d="6,4.4"/>
+    <attrib/>
+    <line>
+      <e pt="ref"/>
+      <va d="0,0 0,1"/>
+    </line>
+    <line>
+      <e pt="ref"/>
+      <va d="0,0 0.631,0"/>
+    </line>
+    <poly>
+      <e/>
+      <va d="0.095,1 0.54,1 0.095,0 0.54,0"/>
+    </poly>
+  </pattern>
+  <pattern>
+    <st d="0x0059 (Y)"/>
+    <v d="6.86,4.4"/>
+    <attrib/>
+    <line>
+      <e pt="ref"/>
+      <va d="0,0 0,1"/>
+    </line>
+    <line>
+      <e pt="ref"/>
+      <va d="0,0 0.567,0"/>
+    </line>
+    <poly>
+      <e/>
+      <va d="0.032,1 0.286,0.524 0.54,1"/>
+    </poly>
+    <line>
+      <e/>
+      <va d="0.286,0.524 0.286,0"/>
+    </line>
+  </pattern>
+  <pattern>
+    <st d="0x0058 (X)"/>
+    <v d="7.72,4.4"/>
+    <attrib/>
+    <line>
+      <e pt="ref"/>
+      <va d="0,0 0,1"/>
+    </line>
+    <line>
+      <e pt="ref"/>
+      <va d="0,0 0.631,0"/>
+    </line>
+    <line>
+      <e/>
+      <va d="0.095,0 0.54,1"/>
+    </line>
+    <line>
+      <e/>
+      <va d="0.095,1 0.54,0"/>
+    </line>
+  </pattern>
+  <pattern>
+    <st d="0x0057 (W)"/>
+    <v d="8.58,4.4"/>
+    <attrib/>
+    <line>
+      <e pt="ref"/>
+      <va d="0,0 0,1"/>
+    </line>
+    <line>
+      <e pt="ref"/>
+      <va d="0,0 0.758,0"/>
+    </line>
+    <poly>
+      <e/>
+      <va d="0.063,1 0.222,0 0.381,0.727 0.54,0 0.698,1"/>
+    </poly>
+  </pattern>
+  <pattern>
+    <st d="0x0056 (V)"/>
+    <v d="0,5.5"/>
+    <attrib/>
+    <line>
+      <e pt="ref"/>
+      <va d="0,0 0,1"/>
+    </line>
+    <line>
+      <e pt="ref"/>
+      <va d="0,0 0.567,0"/>
+    </line>
+    <poly>
+      <e/>
+      <va d="0.031,1 0.286,0 0.54,1"/>
+    </poly>
+  </pattern>
+  <pattern>
+    <st d="0x0055 (U)"/>
+    <v d="0.858,5.5"/>
+    <attrib/>
+    <line>
+      <e pt="ref"/>
+      <va d="0,0 0,1"/>
+    </line>
+    <line>
+      <e pt="ref"/>
+      <va d="0,0 0.694,0"/>
+    </line>
+    <line>
+      <e/>
+      <va d="0.126,1 0.126,0.22"/>
+    </line>
+    <arc>
+      <e/>
+      <v d="0.348,0.223"/>
+      <sa d="0.223 3.15 3.12"/>
+    </arc>
+    <line>
+      <e/>
+      <va d="0.571,0.22 0.571,1"/>
+    </line>
+  </pattern>
+  <pattern>
+    <st d="0x0054 (T)"/>
+    <v d="1.72,5.5"/>
+    <attrib/>
+    <line>
+      <e pt="ref"/>
+      <va d="0,0 0,1"/>
+    </line>
+    <line>
+      <e pt="ref"/>
+      <va d="0,0 0.504,0"/>
+    </line>
+    <line>
+      <e/>
+      <va d="0.254,0 0.254,1"/>
+    </line>
+    <line>
+      <e/>
+      <va d="0.032,1 0.477,1"/>
+    </line>
+  </pattern>
+  <pattern>
+    <st d="0x0053 (S)"/>
+    <v d="2.57,5.5"/>
+    <attrib/>
+    <line>
+      <e pt="ref"/>
+      <va d="0,0 0,1"/>
+    </line>
+    <line>
+      <e pt="ref"/>
+      <va d="0,0 0.631,0"/>
+    </line>
+    <bez>
+      <e/>
+      <va>
+        <va d="0.545,0.881 0.488,0.971 0.39,1 0.288,1 0.161,1.01 0.025,0.931 0.027,0.795 0.029,0.66 0.187,0.604 0.324,0.564"/>
+        <va d="0.537,0.502 0.682,0.426 0.673,0.245 0.665,0.084 0.484,-0.0118 0.324,0.001 0.174,0.013 0.034,0.075 0,0.248"/>
+      </va>
+    </bez>
+  </pattern>
+  <pattern>
+    <st d="0x0052 (R)"/>
+    <v d="3.43,5.5"/>
+    <attrib/>
+    <line>
+      <e pt="ref"/>
+      <va d="0,0 0,1"/>
+    </line>
+    <line>
+      <e pt="ref"/>
+      <va d="0,0 0.663,0"/>
+    </line>
+    <poly>
+      <e/>
+      <va d="0.111,0 0.111,1 0.26,1"/>
+    </poly>
+    <arc>
+      <e/>
+      <v d="0.29,0.738"/>
+      <sa d="0.264 -4.6 -3.37"/>
+    </arc>
+    <line>
+      <e/>
+      <va d="0.26,0.476 0.111,0.476"/>
+    </line>
+    <line>
+      <e/>
+      <va d="0.26,0.476 0.556,0"/>
+    </line>
+  </pattern>
+  <pattern>
+    <st d="0x0051 (Q)"/>
+    <v d="4.29,5.5"/>
+    <attrib/>
+    <line>
+      <e pt="ref"/>
+      <va d="0,0 0,1"/>
+    </line>
+    <line>
+      <e pt="ref"/>
+      <va d="0,0 0.694,0"/>
+    </line>
+    <bez>
+      <e/>
+      <va>
+        <va d="0.698,0.495 0.698,0.739 0.588,1 0.338,1 0.114,1 0,0.728 0,0.495 0,0.273 0.129,0 0.354,0"/>
+        <va d="0.578,0 0.698,0.278 0.698,0.495"/>
+      </va>
+    </bez>
+    <line>
+      <e/>
+      <va d="0.395,0.261 0.569,0"/>
+    </line>
+  </pattern>
+  <pattern>
+    <st d="0x0050 (P)"/>
+    <v d="5.15,5.5"/>
+    <attrib/>
+    <line>
+      <e pt="ref"/>
+      <va d="0,0 0,1"/>
+    </line>
+    <line>
+      <e pt="ref"/>
+      <va d="0,0 0.663,0"/>
+    </line>
+    <poly>
+      <e/>
+      <va d="0.111,0 0.111,1 0.26,1"/>
+    </poly>
+    <arc>
+      <e/>
+      <v d="0.29,0.738"/>
+      <sa d="0.264 -4.6 -3.37"/>
+    </arc>
+    <line>
+      <e/>
+      <va d="0.26,0.476 0.111,0.476"/>
+    </line>
+  </pattern>
+  <pattern>
+    <st d="0x0060 (`)"/>
+    <v d="6,5.5"/>
+    <attrib/>
+    <line>
+      <e pt="ref"/>
+      <va d="0,0 0,1"/>
+    </line>
+    <line>
+      <e pt="ref"/>
+      <va d="0,0 0.203,0"/>
+    </line>
+    <line>
+      <e/>
+      <va d="0.083,0.836 0.123,0.658"/>
+    </line>
+  </pattern>
+  <pattern>
+    <st d="0x007e (~)"/>
+    <v d="6.86,5.5"/>
+    <attrib/>
+    <line>
+      <e pt="ref"/>
+      <va d="0,0 0,1"/>
+    </line>
+    <line>
+      <e pt="ref"/>
+      <va d="0,0 0.496,0"/>
+    </line>
+    <bez>
+      <e/>
+      <va>
+        <va d="0.083,0.393 0.099,0.464 0.122,0.556 0.189,0.572 0.246,0.586 0.301,0.527 0.34,0.481 0.378,0.435 0.434,0.377 0.49,0.391"/>
+        <va d="0.557,0.408 0.58,0.5 0.595,0.57"/>
+      </va>
+    </bez>
+  </pattern>
+  <pattern>
+    <st d="0x007d (})"/>
+    <v d="7.72,5.5"/>
+    <attrib/>
+    <line>
+      <e pt="ref"/>
+      <va d="0,0 0,1"/>
+    </line>
+    <line>
+      <e pt="ref"/>
+      <va d="0,0 0.287,0"/>
+    </line>
+    <poly>
+      <e/>
+      <va d="0.093,0.028 0.152,0.127 0.152,0.427 0.193,0.497 0.152,0.568 0.152,0.868 0.093,0.967"/>
+    </poly>
+  </pattern>
+  <pattern>
+    <st d="0x007c (|)"/>
+    <v d="8.58,5.5"/>
+    <attrib/>
+    <line>
+      <e pt="ref"/>
+      <va d="0,0 0,1"/>
+    </line>
+    <line>
+      <e pt="ref"/>
+      <va d="0,0 0.163,0"/>
+    </line>
+    <line>
+      <e/>
+      <va d="0.083,1 0.083,0"/>
+    </line>
+  </pattern>
+  <pattern>
+    <st d="0x007b ({)"/>
+    <v d="0,6.6"/>
+    <attrib/>
+    <line>
+      <e pt="ref"/>
+      <va d="0,0 0,1"/>
+    </line>
+    <line>
+      <e pt="ref"/>
+      <va d="0,0 0.287,0"/>
+    </line>
+    <poly>
+      <e/>
+      <va d="0.193,0.962 0.135,0.863 0.135,0.563 0.093,0.492 0.135,0.421 0.135,0.121 0.193,0.022"/>
+    </poly>
+  </pattern>
+  <pattern>
+    <st d="0x0020 ( )"/>
+    <v d="0,0.858"/>
+    <attrib/>
+    <line>
+      <e pt="ref"/>
+      <va d="0,0 0,1"/>
+    </line>
+    <line>
+      <e pt="ref"/>
+      <va d="0,0 0.287,0"/>
+    </line>
+  </pattern>
+</project>

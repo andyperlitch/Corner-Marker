@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<project xmlns="http://autometrix.biz/psxml" xmlns:ui="http://autometrix.biz/psxml/ui" version="1.0">
+	<pattern>
+		<st d="rightangles"/>
+		<v d="-4.8542535,-10.602712"/>
+		<attrib/>
+		<ui:attrib/>
+
+		<line>
+			<e />
+			<va d="5.3035695,-1.9238438 27.557763,-1.9238438"/>
+		</line>
+		<line>
+			<e />
+			<va d="27.557763,-1.9238438 28.557763,-24.282029"/>
+		</line>
+		
+		<line>
+			<e />
+			<va d="58.557763,-24.282029 57.557763,-1.9238438"/>
+		</line>
+		<line>
+			<e />
+			<va d="57.557763,-1.9238438 35.3035695,-1.9238438"/>
+		</line>
+		
+		
+		<ui:revision xmlns:ui="http://autometrix.biz/psxml">
+			<ui:entry version="1">
+				<st d="2012-11-20T21:45:10Z"/>
+			</ui:entry>
+		</ui:revision>
+	</pattern>
+	<material ui:curtable="1"><st d="Default"/><table efficency="-0" length="0"><st d="Table 1"/></table></material></project>

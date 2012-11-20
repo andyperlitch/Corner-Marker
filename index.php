@@ -141,21 +141,5 @@ $string = file_get_contents("files/172-000.psxml");
 		<!-- main app file -->
 		<script src="js/corner-marker.js"></script>
 		
-		<!-- test file -->
-		<script>
-		
-		// setTimeout(function(){
-		// 	cm_selected['9.0'] = project.patterns[9].items[0];
-		// 	cm_selected['9.0'].selected= true;
-		// 	cm_selected['9.3'] = project.patterns[9].items[3];
-		// 	cm_selected['9.3'].selected= true;
-		// 	cm_selected_length = 2;
-		// 	setCurrentTool("mark");
-		// 	cm_canvas.trigger("mousedown");
-		// 	cm_canvas.trigger("mouseup");
-		// },1000);
-		
-		</script>
-		
 	</body>
 </html>

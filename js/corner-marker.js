@@ -559,7 +559,6 @@ function getRadiansBetweenPts(A,C,B)
     );
     return theta;
 }
-
 // Returns a function for the angle bisecting line of angle ABC
 function getAngleBisector(A, C, B, return_object)
 {
@@ -571,8 +570,15 @@ function getAngleBisector(A, C, B, return_object)
     var C_prime = subtractPoint(C,B);
     
     
+    
+    if (A_prime[1] == 0) A_prime[1] = 0.0000001;
+    if (C_prime[1] == 0) C_prime[1] = 0.0000001;
+    if (A_prime[0] == 0) A_prime[0] = 0.0000001;
+    if (C_prime[0] == 0) C_prime[0] = 0.0000001;
+    
     theta_A = Math.atan2(A_prime[1],A_prime[0]);
     theta_C = Math.atan2(C_prime[1],C_prime[0]);
+    
     // Get angle between A' and C'
     var theta = getRadiansBetweenPts(A_prime, C_prime);
     var phi, correction = false;
@@ -590,9 +596,11 @@ function getAngleBisector(A, C, B, return_object)
     {
         phi = (Math.max(theta_A, theta_C) + theta/2);
         correction = true;
+        // console.log("test");
     }
     else
     {
+        // console.log("test2");
         phi = (Math.min(theta_A, theta_C) + theta/2);
     }
     
@@ -623,7 +631,6 @@ function getAngleBisector(A, C, B, return_object)
     ;
     
 }
-
 function getLineEquation(point1, point2)
 {
     var slope = (point2[1] - point1[1])/(point2[0] - point1[0]),
@@ -1192,8 +1199,16 @@ Arc.prototype.setup = function($el)
     
 
     
-    // Get the radius, start, and sweep angle
-    var data = $children.filter("sa").attr("d").split(" ");
+    try {
+        // Get the radius, start, and sweep angle
+        data = $children.filter("sa").attr("d").split(" ");
+    } catch(e) {
+        data = [
+            $children.filter("s").attr("d"),
+            0,
+            Math.PI*2
+        ];
+    }
     
     for (var i=0; i < data.length; i++) {
         data[i] = data[i] * 1;
@@ -1844,8 +1859,9 @@ var MarkTool = function(){
                             // Get the equation for line ZC
                             lineZCobj = getAngleBisector(pts1[1],pts2[1],pts1[0],true);
                             lineZC = lineZCobj.line;
-                            // console.log(lineZCobj);
-                            // for (i = pts1[0][0] - 10; i < (pts1[0][0] + 10); i++) markPoint( addPoints ( [i,lineZC(i)],pattern.center), true);
+                            
+                            // Mark bisecting line:
+                            // for (i = pts1[0][0] - 10; i < (pts1[0][0] + 10); i++) markPoint( addPoints ( rotatePt([i,lineZC(i)],pattern.rotation),pattern.center), true);
                             
                             // Get the cosine for the angle bisector
                             bisector_cos = Math.cos(lineZCobj.phi);
@@ -1854,17 +1870,18 @@ var MarkTool = function(){
                             
                             // Get center of new text object
                             center_of_text = addPoints( pts1[0], multiplyPoint( normalizeVector( subtractPoint(vector,pts1[0]) ), ZC ) );
-                            // markPoint(addPoints(pattern.center,center_of_text),true);
                             text_rotation = lineZCobj.phi - Math.PI/2;
                             
-                            // Mark the new center
-                            // markPoint( addPoints(center_of_text,pattern.center),true);
-                            
-                            // Add center text element
+                            // ----------------------------------
+                            //  Add center text element
+                            // ----------------------------------
                             $newText = $('<text><e/><st d="'+corner_mark+'"/><v d="'+center_of_text[0]+','+center_of_text[1]+'"/><sa d="'+text_height+' '+text_rotation+'"/></text>');
                             pattern.$el.append($newText);
                             newTextObj = pattern.addTextlabel($newText);
-                            // Add semi-circle (arc) around this element
+                            
+                            // ----------------------------------
+                            //  Add semi-circle (arc) around this element
+                            // ----------------------------------
                             arcRadius = distanceBetween(pts1[0],newTextObj.points[3]) + distance_from_edge/2;
                             if (lineZCobj.correction)
                             {
@@ -1880,23 +1897,17 @@ var MarkTool = function(){
                                     arcStart -= Math.PI*2;
                                     arcStop -= Math.PI*2;
                                 }
+                                
                             }
                             else
                             {
                                 arcStart = lineZCobj.theta_A; // -this.start
                                 arcStop = lineZCobj.theta_C - lineZCobj.theta_A;  // -this.end
-                                console.log("not corrected: "+arcStart+" "+ arcStop);
                             }
-
-                            // this.start = -startAngle;
-                            // this.end = this.start - endAngle;
-                            // this.antiClockwise = -startAngle > (-startAngle - endAngle);
-                            
                             
                             $arc = $('<arc><e/><v d="'+pts1[0][0]+','+pts1[0][1]+'"/><sa d="'+arcRadius+' '+arcStart+' '+arcStop+'"/></arc>');
                             pattern.$el.append($arc);
                             newArcObj = pattern.addArc($arc);
-                            // console.log($arc[0]);
                             
                             // entry_mark
                             if (entry_mark.length || exit_mark.length)
