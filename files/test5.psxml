@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<project xmlns="http://autometrix.biz/psxml" xmlns:ui="http://autometrix.biz/psxml/ui" version="1.0">
+	<pattern>
+		<st d="example"/>
+		<v d="0,0"/>
+		<!-- <s d="2"/> -->
+		<attrib/>
+		<ui:attrib/>
+		<poly>
+			<e />
+			<va d="-4.4685643,0.91048495 -1.1381062,5.1274679 4.5644048,1.4376078 5.9540924,-1.0542457 2.6715545,-3.5460993 -4.1810427,-5.1274679 -0.15574085,-2.1564117 -5.9540924,-3.1387771 -0.39534215,1.1980065 -4.3487637,-0.16772091"/>
+		</poly>
+		<ui:revision xmlns:ui="http://autometrix.biz/psxml">
+			<ui:entry version="1">
+				<st d="2012-10-30T23:03:52Z"/>
+			</ui:entry>
+		</ui:revision>
+	</pattern>
+	<material ui:curtable="1">
+		<st d="Default"/>
+		<table efficency="-0" length="0">
+			<st d="Table 1"/>
+		</table>
+	</material>
+</project>
