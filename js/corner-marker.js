@@ -1868,13 +1868,24 @@ var MarkTool = function(){
                             arcRadius = distanceBetween(pts1[0],newTextObj.points[3]) + distance_from_edge/2;
                             if (lineZCobj.correction)
                             {
-                                arcStart = lineZCobj.theta_A - Math.PI*2; // -this.start
+                                arcStart = lineZCobj.theta_A; // -this.start
                                 arcStop = lineZCobj.theta_C - arcStart;  // -this.end
+                                if (-arcStart < (-arcStart - arcStop))
+                                {
+                                    arcStart += Math.PI*2;
+                                    arcStop += Math.PI*2;
+                                }
+                                else
+                                {
+                                    arcStart -= Math.PI*2;
+                                    arcStop -= Math.PI*2;
+                                }
                             }
                             else
                             {
                                 arcStart = lineZCobj.theta_A; // -this.start
                                 arcStop = lineZCobj.theta_C - lineZCobj.theta_A;  // -this.end
+                                console.log("not corrected: "+arcStart+" "+ arcStop);
                             }
 
                             // this.start = -startAngle;
