@@ -1792,11 +1792,13 @@ var MarkTool = function(){
                             vector,
                             center_of_text,
                             bisector_cos,
+                            newText,
                             $newText,
                             newTextObj,
                             arcRadius,
                             arcStart,
                             arcEnd,
+                            arc,
                             $arc,
                             arcObj,
                         
@@ -1875,7 +1877,8 @@ var MarkTool = function(){
                             // ----------------------------------
                             //  Add center text element
                             // ----------------------------------
-                            $newText = $('<text><e/><st d="'+corner_mark+'"/><v d="'+center_of_text[0]+','+center_of_text[1]+'"/><sa d="'+text_height+' '+text_rotation+'"/></text>');
+                            newText = $.parseXML('<text><e/><st d="'+corner_mark+'"/><v d="'+center_of_text[0]+','+center_of_text[1]+'"/><sa d="'+text_height+' '+text_rotation+'"/></text>');
+                            $newText = $(newText.documentElement);
                             pattern.$el.append($newText);
                             newTextObj = pattern.addTextlabel($newText);
                             
@@ -1905,26 +1908,32 @@ var MarkTool = function(){
                                 arcStop = lineZCobj.theta_C - lineZCobj.theta_A;  // -this.end
                             }
                             
-                            $arc = $('<arc><e/><v d="'+pts1[0][0]+','+pts1[0][1]+'"/><sa d="'+arcRadius+' '+arcStart+' '+arcStop+'"/></arc>');
+                            arc = $.parseXML('<arc><e/><v d="'+pts1[0][0]+','+pts1[0][1]+'"/><sa d="'+arcRadius+' '+arcStart+' '+arcStop+'"/></arc>');
+                            $arc = $(arc.documentElement);
                             pattern.$el.append($arc);
                             newArcObj = pattern.addArc($arc);
                             
-                            // entry_mark
+                            // ----------------------------------
+                            //  Side marks
+                            // ----------------------------------
                             if (entry_mark.length || exit_mark.length)
                             {
                                 // Init vars
-                                var ZS;
+                                var ZS = distanceBetween(pts1[0],newTextObj.points[3]) + distance_from_edge;
                                 
-                                // Get ZS (ZE + seam allowance)
+
+                                // entry_mark
                                 if (entry_mark.length)
                                 {
-                                    
+                                    var enMarkWidth = (text_height * 3 / 4) * entry_mark.length;
+                                    var ZS_entry = ZS + enMarkWidth/2;
                                 }
 
                                 // exit_mark
                                 if (exit_mark.length)
                                 {
-
+                                    var exMarkWidth = (text_height * 3 / 4) * exit_mark.length;
+                                    var ZS_exit = ZS + exMarkWidth/2;
                                 }
                             }
                             cm_canvas.trigger("cm.change");
@@ -2347,9 +2356,9 @@ CornerMarker = new function()
     // Initializes all patterns and their items
     function initProject(xml)
     {
-        window.origXML = xml;
+        project.xml = xml;
         // jQuery-ify the xml
-        window.$xml = $(window.origXML);
+        $xml = $(project.xml);
         // Find every pattern
         var $patterns = $xml.find("pattern");
         // Create Pattern instances for each

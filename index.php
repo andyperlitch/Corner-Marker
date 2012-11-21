@@ -1,7 +1,7 @@
 <?php
 
 // Read the file
-$string = file_get_contents("files/172-000.psxml");
+$string = file_get_contents("files/angles2.psxml");
 
 ?>
 <!DOCTYPE html>
@@ -103,9 +103,9 @@ $string = file_get_contents("files/172-000.psxml");
 				</fieldset>
 				
 				<fieldset>
-					<legend>Additional Options (<a href="#" class="show-add-ops">show</a>)</legend>
+					<legend>Additional Options</legend>
 					
-					<div class="hide additional-options">
+					<div class="additional-options">
 						<div class="distance_from_edge-wrapper">
 							<label for="distance_from_edge">Minimum Distance from Edge:</label>
 							<input type="text" name="distance_from_edge" id="distance_from_edge" value="{{distance_from_edge}}" />
