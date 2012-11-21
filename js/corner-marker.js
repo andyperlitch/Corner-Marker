@@ -151,6 +151,11 @@ var cm_handlers = {
         {
             cm_handlers.setToolToKey("mark");
             return false;
+        },
+        // c
+        67:function(evt)
+        {
+            cm_handlers.setToolToKey("mark");
         }
     },
     
@@ -176,11 +181,6 @@ var cm_handlers = {
         16:function(evt)
         {
             cm_handlers.shift_is_down = false;
-        },
-        // c
-        91: function(evt)
-        {
-            setCurrentTool(cm_handlers.lastTool);
         }
     },
     
@@ -256,7 +256,8 @@ var cm_handlers = {
 var cm_helpers = {
     
     outlines:{},
-    cursor:{}
+    cursor:{},
+    lines:{}
     
 };
 
@@ -631,11 +632,24 @@ function getAngleBisector(A, C, B, return_object)
     ;
     
 }
-function getLineEquation(point1, point2)
+function getLineEquation(point1, point2, slope)
 {
-    var slope = (point2[1] - point1[1])/(point2[0] - point1[0]),
-    // y = mx + b  ->  b = y - mx
-    b = point1[1] - slope * point1[0];
+    if (point2)
+    {
+        slope = (point2[1] - point1[1])/(point2[0] - point1[0]),
+        // y = mx + b  ->  b = y - mx
+        b = point1[1] - slope * point1[0];
+    }
+    else if (slope)
+    {
+        // y = mx + b
+        // b = y - mx
+        b = point1[1] - slope * point1[0];
+    }
+    else 
+    {
+        throw "Not enough info given for a line equation";
+    }
     
     return function(x){
         return slope * x + b;
@@ -721,7 +735,7 @@ var Pattern = function(i, $el)
     // Get lines
     var $lines = $el.find("line");
     $lines.each(function(i){
-       self.items.push( new Line(self.index,master_i++,$(this), self.center, self.rotation) ); 
+       self.items.push( new LineSeg(self.index,master_i++,$(this), self.center, self.rotation) ); 
     });
     
     // Get Textlabeles
@@ -1052,13 +1066,13 @@ Poly.prototype.draw = function(only_if_not_selected)
     this.endStroke(function(){context.stroke();});
 }
 
-// Line object (drawable)
-var Line = function(pattern_idx, item_idx, $el, pattern_center, pattern_rotation)
+// LineSeg object (drawable)
+var LineSeg = function(pattern_idx, item_idx, $el, pattern_center, pattern_rotation)
 {
     PatternItem.call(this, pattern_idx, item_idx, $el, pattern_center, pattern_rotation);
 }
-Line.prototype = new Poly();
-Line.prototype.setup = function($el)
+LineSeg.prototype = new Poly();
+LineSeg.prototype.setup = function($el)
 {
     // Init points
     this.points = [];
@@ -1698,7 +1712,7 @@ var MarkTool = function(){
     // Handlers
     this.handlers["mousedown"] = function(evt)
     {
-        var poly1, poly2, pts1, pts2, shares_a_point = false, pattern, dialog_html;
+        var poly1, poly2, pts1, pts2, shares_a_point = false, pattern, dialog_html, entryIs;
         
         try {
             // Check that two things are selected
@@ -1740,6 +1754,7 @@ var MarkTool = function(){
                 shares_a_point = true;
                 pts2.reverse();
                 // poly2 is the entry segment
+                entryIs = "2";
             }
             if ( isSamePoint(pts1[pts1.length -1], pts2[0]) )
             {
@@ -1747,23 +1762,13 @@ var MarkTool = function(){
                 shares_a_point = true;
                 pts1.reverse();
                 // poly1 is the entry segment
+                entryIs = "1";
             }
             if (!shares_a_point) throw "These polylines do not share an end point.";
             
             
             // Get the pattern
             pattern = project.patterns[poly1.pattern_index];
-            
-            // Check pattern for rotation
-            // if (pattern.rotation != 0)
-            // {
-            //     for (var i = pts1.length - 1; i >= 0; i--){
-            //         pts1[i] = rotatePt(pts1[i],pattern.rotation);
-            //     };
-            //     for (var i = pts2.length - 1; i >= 0; i--){
-            //         pts2[i] = rotatePt(pts2[i],pattern.rotation);
-            //     };
-            // }
             
             // Get dialog
             dialog_html = ich.mark_dialog({
@@ -1781,36 +1786,20 @@ var MarkTool = function(){
                     {
                         // Create object containing corner mark info
                         var 
-                            markObj = {}, 
-                            GD,
-                            theta, 
-                            mu, 
-                            GY, 
-                            XY, 
-                            ZC, 
-                            lineZC, 
-                            vector,
-                            center_of_text,
-                            bisector_cos,
-                            newText,
-                            $newText,
-                            newTextObj,
-                            arcRadius,
-                            arcStart,
-                            arcEnd,
-                            arc,
-                            $arc,
-                            arcObj,
+                            markObj = {}, GD, theta, mu, GY, 
+                            XY, ZC, lineZC, vector, center_of_text,
+                            bisector_cos, newText, $newText, newTextObj,
+                            arcRadius, arcStart, arcEnd, arc, $arc, arcObj,
                         
-                        // Set input values
-                        entry_mark = $("#entry_mark").val(),
-                        corner_mark = $("#corner_mark").val(),
-                        exit_mark = $("#exit_mark").val(),
-                        draw_semi = $("#draw_semi").is(":checked"),
-                        distance_from_edge = $("#distance_from_edge").val() *1,
-                        text_height = $("#text_height").val() *1,
-                        text_rotation,
-                        rename_pattern = $("#rename_pattern").is(":checked");
+                            // Set input values
+                            entry_mark = $("#entry_mark").val(),
+                            corner_mark = $("#corner_mark").val(),
+                            exit_mark = $("#exit_mark").val(),
+                            draw_semi = $("#draw_semi").is(":checked"),
+                            distance_from_edge = $("#distance_from_edge").val() *1,
+                            text_height = $("#text_height").val() *1,
+                            text_rotation,
+                            rename_pattern = $("#rename_pattern").is(":checked");
 
                             
                         try
@@ -1900,7 +1889,6 @@ var MarkTool = function(){
                                     arcStart -= Math.PI*2;
                                     arcStop -= Math.PI*2;
                                 }
-                                
                             }
                             else
                             {
@@ -1927,6 +1915,21 @@ var MarkTool = function(){
                                 {
                                     var enMarkWidth = (text_height * 3 / 4) * entry_mark.length;
                                     var ZS_entry = ZS + enMarkWidth/2;
+                                    var entryLinePoints = entryIs == "1" ? pts1 : pts2 ;
+                                    // Get point on entry line ZS_entry away from corner
+                                    // get the line:
+                                    var entryLine = getLineEquation(entryLinePoints[0],entryLinePoints[1]);
+                                    // get point far away from desired point
+                                    var entryVectorPoint = entryLinePoints[0][0] < entryLinePoints[1][0] 
+                                        ? [ entryLinePoints[0][0]+1000, entryLine(entryLinePoints[0][0]+1000) ]
+                                        : [ entryLinePoints[0][0]-1000, entryLine(entryLinePoints[0][0]-1000) ]
+                                    ;
+                                    // 
+                                    var linePoint = addPoints( entryLinePoints[0], multiplyPoint( normalizeVector( subtractPoint(entryVectorPoint,entryLinePoints[0]) ), ZS_entry ) );
+                                    var lineSlope = -1 / ( entryLine(1) - entryLine(0) );
+                                    var perpLine = getLineEquation(linePoint,false,lineSlope);
+
+
                                 }
 
                                 // exit_mark
@@ -1934,6 +1937,7 @@ var MarkTool = function(){
                                 {
                                     var exMarkWidth = (text_height * 3 / 4) * exit_mark.length;
                                     var ZS_exit = ZS + exMarkWidth/2;
+                                    var exitLinePoints = entryIs == "2" ? pts2 : pts1 ;
                                 }
                             }
                             cm_canvas.trigger("cm.change");
@@ -2150,6 +2154,27 @@ Marquee.prototype.containsBox = function(cornerA, cornerB, canvas_coords)
     ;
     // console.log(retVal);
     return retVal;
+}
+
+var Line = function(lineEquation)
+{
+    var self = this;
+    this.equation = lineEquation;
+    this.y_intercept = lineEquation(0);
+    this.slope = lineEquation(1) - this.y_intercept;
+    this.inverse = function(y){ (y - self.y_intercept)/self.slope }
+}
+Line.prototype.draw = function()
+{
+    // Get point for top of screen
+    var topLeft = s2c([0,0]);
+    var bottomRight = s2c([cm_canvas.width(),cm_canvas.height()]);
+
+    // get x & y value for top left corner
+    var topY = this.equation(topLeft[0]);
+    var topX = this.inverse(topLeft[1]);
+    var bottomY = this.equation(bottomRight[0]);
+    var bottomX = this.inverse(bottomRight[1]);
 }
 
 // UI of whole app
