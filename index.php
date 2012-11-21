@@ -132,8 +132,8 @@ $string = file_get_contents("files/angles2.psxml");
 		<!-- icanhaz -->
 		<script src="js/vendor/icanhaz.js" type="text/javascript" charset="utf-8"></script>
 		<!-- jquery -->
-		<!-- <script src="js/vendor/jquery-1.8.2.js" type="text/javascript"></script> -->
-		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+		<script src="js/vendor/jquery-1.8.2.js" type="text/javascript"></script>
+		<!-- <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script> -->
 		<!-- jquery ui -->
 		<script src="js/vendor/jquery-ui-1.9.1.custom.min.js" type="text/javascript" charset="utf-8"></script>
 		<!-- pnotify -->
