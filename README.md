@@ -1,4 +1,4 @@
-Corner-Marker
+Corner Marker
 =============
 
 This is a simple CAD program written entirely in Javascript/jQuery using the HTML5 Canvas 2d API that reads in PatternSmith files and allows the user to add specially-formatted marks to corners of polygons. PatternSmith is a program by Autometrix, a company that manufactures large cutting tables.
