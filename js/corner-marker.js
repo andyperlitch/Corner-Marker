@@ -51,7 +51,7 @@ var cm_settings = {
             "min_corner_angle":30,
             "default_label_height":0.375,
             "default_edge_distance":0.125,
-            "same_point_tolerance":0.01,
+            "same_point_tolerance":0.02,
             "max_mark_chars":3
         }
     },
@@ -181,6 +181,10 @@ var cm_handlers = {
         16:function(evt)
         {
             cm_handlers.shift_is_down = false;
+        },
+        91:function(evt)
+        {
+            setCurrentTool(cm_handlers.lastTool);
         }
     },
     
@@ -636,13 +640,21 @@ function getAngleBisector(A, C, B, return_object)
 function getLineEquation(point1, point2, slope)
 {
     var b;
+    var restore = false;
+    var vertical_correction = 0.00001;
     if (point2)
     {
+        if (point1[0] == point2[0]) 
+        {
+            point2[0] -= vertical_correction;
+            restore = true;
+        }
+
         slope = (point2[1] - point1[1])/(point2[0] - point1[0]);
         // y = mx + b  ->  b = y - mx
         b = point1[1] - slope * point1[0];
     }
-    else if (slope)
+    else if (slope !== undefined)
     {
         // y = mx + b
         // b = y - mx
@@ -656,6 +668,8 @@ function getLineEquation(point1, point2, slope)
         throw "Not enough info given for a line equation";
     }
     
+    if (restore) point2[0] += vertical_correction;
+
     return function(x){
         return slope * x + b;
     }
@@ -1931,7 +1945,8 @@ var MarkTool = function(){
                                 ;
                                 // 
                                 var entryLinePoint = addPoints( entryLinePoints[0], multiplyPoint( normalizeVector( subtractPoint(entryVectorPoint,entryLinePoints[0]) ), ZS_entry ) );
-                                var entryLineSlope = -1 / ( entryLine(1) - entryLine(0) );
+                                var entryLineSlope = ( entryLine(1) - entryLine(0) ) == 0 ? Infinity : -1 / ( entryLine(1) - entryLine(0) );
+                                // console.log(entryLineSlope);
                                 
                                 // add line to helpers
                                 var entryPerpLine = new Line( getLineEquation(entryLinePoint,false,entryLineSlope) );
@@ -1950,8 +1965,8 @@ var MarkTool = function(){
                                     : [ exitLinePoints[0][0]-1000, exitLine(exitLinePoints[0][0]-1000) ]
                                 ;
                                 var exitLinePoint = addPoints (exitLinePoints[0], multiplyPoint( normalizeVector( subtractPoint(exitVectorPoint,exitLinePoints[0]) ), ZS_exit ) );
-                                var exitLineSlope = -1 / (exitLine(1) - exitLine(0));
-                                
+                                var exitLineSlope = (exitLine(1) - exitLine(0)) == 0 ? Infinity : -1 / (exitLine(1) - exitLine(0));
+
                                 // add to helpers
                                 var exitPerpLine = new Line( getLineEquation(exitLinePoint,false,exitLineSlope) );
                                 // cm_helpers.lines["mark_exit_perp_line"] = exitPerpLine;
@@ -1963,25 +1978,63 @@ var MarkTool = function(){
                                 {
                                     // Get center for entry text element
                                     var entry_mark_center = addPoints( entryLinePoint, multiplyPoint( normalizeVector( subtractPoint(intersectPoint,entryLinePoint) ), distance_from_edge ) );
-                                    cm_helpers.points["entry_mark_center"] = new Point(entry_mark_center);
+                                    cm_helpers.points["entry_mark_center"] = new Point(addPoints(entry_mark_center,pattern.center));
 
                                     // Add text object
                                     var entryTextRotation = entryIs == "1" ? lineZCobj.theta_A : lineZCobj.theta_C ;
+                                    entryTextRotation %= 2*Math.PI;
+
+                                    // Determine if rotation needs to be flipped
+                                    if 
+                                    ( 
+                                        
+                                        ( entry_mark_center[1] < entryLinePoint[1]  && Math.sin(entryTextRotation + Math.PI/2) > 0 )
+                                        ||
+                                        ( entryLinePoint[1] < entry_mark_center[1] && Math.sin(entryTextRotation + Math.PI/2) < 0 )
+                                        ||
+                                        ( entryLinePoint[0] > entry_mark_center[0] && Math.cos(entryTextRotation + Math.PI/2) > 0 )
+                                        ||
+                                        ( entryLinePoint[0] < entry_mark_center[0] && Math.cos(entryTextRotation + Math.PI/2) < 0 )
+
+                                    ) entryTextRotation += Math.PI;
+                                    entryTextRotation -= Math.PI;
+
+
+
                                     entryTextRotation += Math.PI;
                                     var newEntryText = $.parseXML('<text><e/><st d="'+entry_mark+'"/><v d="'+entry_mark_center[0]+','+entry_mark_center[1]+'"/><sa d="'+text_height+' '+entryTextRotation+'"/></text>'),
                                     $newEntryText = $(newEntryText.documentElement);
                                     pattern.$el.append($newEntryText);
                                     var newEntryTextObj = pattern.addTextlabel($newEntryText);
-
+                                    
+                                    // Double check if vertical and correctly positioned
+                                    
                                 }
                                 if (exit_mark.length)
                                 {
                                     // Get center for exit text element
                                     var exit_mark_center = addPoints( exitLinePoint, multiplyPoint( normalizeVector( subtractPoint( intersectPoint,exitLinePoint) ), distance_from_edge ) );
-                                    cm_helpers.points["exit_mark_center"] = new Point(exit_mark_center);
+                                    cm_helpers.points["exit_mark_center"] = new Point(addPoints(exit_mark_center,pattern.center));
 
                                     // Add text object
                                     var exitTextRotation = entryIs == "2" ? lineZCobj.theta_A : lineZCobj.theta_C ;
+                                    exitTextRotation %= 2*Math.PI;
+
+                                    // Determine if rotation needs to be flipped
+                                    if 
+                                    ( 
+                                        ( exit_mark_center[1] < exitLinePoint[1]  && Math.sin(exitTextRotation + Math.PI/2) > 0 )
+                                        ||
+                                        ( exitLinePoint[1] < exit_mark_center[1] && Math.sin(exitTextRotation + Math.PI/2) < 0 )
+                                        ||
+                                        ( exitLinePoint[0] > exit_mark_center[0] && Math.cos(exitTextRotation + Math.PI/2) > 0 )
+                                        ||
+                                        ( exitLinePoint[0] < exit_mark_center[0] && Math.cos(exitTextRotation + Math.PI/2) < 0 )
+
+                                    ) {
+                                        exitTextRotation += Math.PI;
+                                    }
+
                                     var newExitText = $.parseXML('<text><e/><st d="'+exit_mark+'"/><v d="'+exit_mark_center[0]+','+exit_mark_center[1]+'"/><sa d="'+text_height+' '+exitTextRotation+'"/></text>'),
                                     $newExitText = $(newExitText.documentElement);
                                     pattern.$el.append($newExitText);
@@ -2283,8 +2336,16 @@ Line.prototype.draw = function()
 }
 Line.prototype.getIntersectPoint = function(line)
 {
-    if (this.slope == line.slope) return false;
-    var x = (this.y_intercept - line.y_intercept)/(line.slope - this.slope);
+    if (isNaN(line.slope))
+    {
+        var x = line.inverse(1);
+
+    }
+    else
+    {
+        if (this.slope == line.slope) return false;
+        var x = (this.y_intercept - line.y_intercept)/(line.slope - this.slope);
+    }
     var y = this.equation(x);
     return [x,y];
 }
