@@ -88,13 +88,13 @@ $string = file_get_contents("files/angles2.psxml");
 					
 					<div class="mark-wrapper">
 						<label for="entry_mark">Entry Mark:</label>
-						<input type="text" name="entry_mark" id="entry_mark" />
+						<input type="text" name="entry_mark" id="entry_mark" value="ENT"/>
 					</div><div class="mark-wrapper">
 						<label for="corner_mark">Corner Mark:</label>
-						<input type="text" value="{{pattern_name}}" name="corner_mark" id="corner_mark" />
+						<input type="text" value="COR" name="corner_mark" id="corner_mark" />
 					</div><div class="mark-wrapper">
 						<label for="exit_mark">Exit Mark:</label>
-						<input type="text" name="exit_mark" id="exit_mark" />
+						<input type="text" name="exit_mark" id="exit_mark" value="EXT" />
 					</div><div class="input-wrapper">
 						<label for="draw_semi">Draw Semi-Circle:</label>
 						<input type="checkbox" name="draw_semi" id="draw_semi" checked="checked" />

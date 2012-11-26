@@ -257,7 +257,8 @@ var cm_helpers = {
     
     outlines:{},
     cursor:{},
-    lines:{}
+    lines:{},
+    points:{}
     
 };
 
@@ -454,7 +455,7 @@ function subtractPoint(point1, point2)
     return newPoint;
 }
 // Checks if the two points are the same
-var isSamePoint =  function(point1, point2)
+function isSamePoint(point1, point2)
 {
     var x_diff, y_diff;
     
@@ -634,9 +635,10 @@ function getAngleBisector(A, C, B, return_object)
 }
 function getLineEquation(point1, point2, slope)
 {
+    var b;
     if (point2)
     {
-        slope = (point2[1] - point1[1])/(point2[0] - point1[0]),
+        slope = (point2[1] - point1[1])/(point2[0] - point1[0]);
         // y = mx + b  ->  b = y - mx
         b = point1[1] - slope * point1[0];
     }
@@ -644,6 +646,9 @@ function getLineEquation(point1, point2, slope)
     {
         // y = mx + b
         // b = y - mx
+        // don't use this program for rocket science
+        if (slope == Infinity) slope =        100000000000000000000000000000000000;
+        else if (slope == -Infinity) slope = -100000000000000000000000000000000000;
         b = point1[1] - slope * point1[0];
     }
     else 
@@ -671,7 +676,6 @@ function averagePoints(point1,point2)
 {
     return [ (point1[0] + point2[0])/2, (point1[1] + point2[1])/2 ];
 }
-
 
 
 // ----------------------------------
@@ -1910,35 +1914,80 @@ var MarkTool = function(){
                                 var ZS = distanceBetween(pts1[0],newTextObj.points[3]) + distance_from_edge;
                                 
 
-                                // entry_mark
+                                // ------------------------------------
+                                //  entry_mark
+                                // ------------------------------------
+                                var enMarkWidth = (text_height * 3 / 4) * entry_mark.length;
+                                var ZS_entry = ZS + enMarkWidth/2;
+                                var entryLinePoints = entryIs == "1" ? pts1 : pts2 ;
+                                // Get point on entry line ZS_entry away from corner
+                                // get the line:
+                                var entryLine = getLineEquation(entryLinePoints[0],entryLinePoints[1]);
+                                // get point far away from desired point
+                                
+                                var entryVectorPoint = entryLinePoints[0][0] < entryLinePoints[1][0] 
+                                    ? [ entryLinePoints[0][0]+1000, entryLine(entryLinePoints[0][0]+1000) ]
+                                    : [ entryLinePoints[0][0]-1000, entryLine(entryLinePoints[0][0]-1000) ]
+                                ;
+                                // 
+                                var entryLinePoint = addPoints( entryLinePoints[0], multiplyPoint( normalizeVector( subtractPoint(entryVectorPoint,entryLinePoints[0]) ), ZS_entry ) );
+                                var entryLineSlope = -1 / ( entryLine(1) - entryLine(0) );
+                                
+                                // add line to helpers
+                                var entryPerpLine = new Line( getLineEquation(entryLinePoint,false,entryLineSlope) );
+                                // cm_helpers.lines["mark_entry_perp_line"] = entryPerpLine;
+
+
+                                // ------------------------------------
+                                //  exit_mark
+                                // ------------------------------------
+                                var exMarkWidth = (text_height * 3 / 4) * exit_mark.length;
+                                var ZS_exit = ZS + exMarkWidth/2;
+                                var exitLinePoints = entryIs == "1" ? pts2 : pts1 ;
+                                var exitLine = getLineEquation(exitLinePoints[0],exitLinePoints[1]);
+                                var exitVectorPoint = exitLinePoints[0][0] < exitLinePoints[1][0]
+                                    ? [ exitLinePoints[0][0]+1000, exitLine(exitLinePoints[0][0]+1000) ]
+                                    : [ exitLinePoints[0][0]-1000, exitLine(exitLinePoints[0][0]-1000) ]
+                                ;
+                                var exitLinePoint = addPoints (exitLinePoints[0], multiplyPoint( normalizeVector( subtractPoint(exitVectorPoint,exitLinePoints[0]) ), ZS_exit ) );
+                                var exitLineSlope = -1 / (exitLine(1) - exitLine(0));
+                                
+                                // add to helpers
+                                var exitPerpLine = new Line( getLineEquation(exitLinePoint,false,exitLineSlope) );
+                                // cm_helpers.lines["mark_exit_perp_line"] = exitPerpLine;
+
+                                // Get intersection of the two perp lines
+                                var intersectPoint = entryPerpLine.getIntersectPoint(exitPerpLine);
+
                                 if (entry_mark.length)
                                 {
-                                    var enMarkWidth = (text_height * 3 / 4) * entry_mark.length;
-                                    var ZS_entry = ZS + enMarkWidth/2;
-                                    var entryLinePoints = entryIs == "1" ? pts1 : pts2 ;
-                                    // Get point on entry line ZS_entry away from corner
-                                    // get the line:
-                                    var entryLine = getLineEquation(entryLinePoints[0],entryLinePoints[1]);
-                                    // get point far away from desired point
-                                    var entryVectorPoint = entryLinePoints[0][0] < entryLinePoints[1][0] 
-                                        ? [ entryLinePoints[0][0]+1000, entryLine(entryLinePoints[0][0]+1000) ]
-                                        : [ entryLinePoints[0][0]-1000, entryLine(entryLinePoints[0][0]-1000) ]
-                                    ;
-                                    // 
-                                    var linePoint = addPoints( entryLinePoints[0], multiplyPoint( normalizeVector( subtractPoint(entryVectorPoint,entryLinePoints[0]) ), ZS_entry ) );
-                                    var lineSlope = -1 / ( entryLine(1) - entryLine(0) );
-                                    var perpLine = getLineEquation(linePoint,false,lineSlope);
+                                    // Get center for entry text element
+                                    var entry_mark_center = addPoints( entryLinePoint, multiplyPoint( normalizeVector( subtractPoint(intersectPoint,entryLinePoint) ), distance_from_edge ) );
+                                    cm_helpers.points["entry_mark_center"] = new Point(entry_mark_center);
 
+                                    // Add text object
+                                    var entryTextRotation = entryIs == "1" ? lineZCobj.theta_A : lineZCobj.theta_C ;
+                                    entryTextRotation += Math.PI;
+                                    var newEntryText = $.parseXML('<text><e/><st d="'+entry_mark+'"/><v d="'+entry_mark_center[0]+','+entry_mark_center[1]+'"/><sa d="'+text_height+' '+entryTextRotation+'"/></text>'),
+                                    $newEntryText = $(newEntryText.documentElement);
+                                    pattern.$el.append($newEntryText);
+                                    var newEntryTextObj = pattern.addTextlabel($newEntryText);
 
                                 }
-
-                                // exit_mark
                                 if (exit_mark.length)
                                 {
-                                    var exMarkWidth = (text_height * 3 / 4) * exit_mark.length;
-                                    var ZS_exit = ZS + exMarkWidth/2;
-                                    var exitLinePoints = entryIs == "2" ? pts2 : pts1 ;
+                                    // Get center for exit text element
+                                    var exit_mark_center = addPoints( exitLinePoint, multiplyPoint( normalizeVector( subtractPoint( intersectPoint,exitLinePoint) ), distance_from_edge ) );
+                                    cm_helpers.points["exit_mark_center"] = new Point(exit_mark_center);
+
+                                    // Add text object
+                                    var exitTextRotation = entryIs == "2" ? lineZCobj.theta_A : lineZCobj.theta_C ;
+                                    var newExitText = $.parseXML('<text><e/><st d="'+exit_mark+'"/><v d="'+exit_mark_center[0]+','+exit_mark_center[1]+'"/><sa d="'+text_height+' '+exitTextRotation+'"/></text>'),
+                                    $newExitText = $(newExitText.documentElement);
+                                    pattern.$el.append($newExitText);
+                                    var newExitTextObj = pattern.addTextlabel($newExitText);
                                 }
+
                             }
                             cm_canvas.trigger("cm.change");
                             $(this).dialog("close");
@@ -2017,11 +2066,6 @@ Marquee.prototype.draw = function()
     if (this.hide) return;
     context.lineWidth = 0.5;
     context.strokeStyle = this.stroke;
-    // dashed line
-    // context.dashedLine(this.x0, this.y0, this.x0, this.y1, this.da);
-    // context.dashedLine(this.x0, this.y1, this.x1, this.y1, this.da);
-    // context.dashedLine(this.x1, this.y0, this.x1, this.y1, this.da);
-    // context.dashedLine(this.x0, this.y0, this.x1, this.y0, this.da);
     
     // normal line
     context.beginPath();
@@ -2159,22 +2203,100 @@ Marquee.prototype.containsBox = function(cornerA, cornerB, canvas_coords)
 var Line = function(lineEquation)
 {
     var self = this;
-    this.equation = lineEquation;
+    this.stroke = "#FFF";
+    this.hide = false;
+    this.equation = function(x){ return lineEquation(x);}
     this.y_intercept = lineEquation(0);
-    this.slope = lineEquation(1) - this.y_intercept;
-    this.inverse = function(y){ (y - self.y_intercept)/self.slope }
+    if (this.y_intercept !== lineEquation(1))
+    {
+        this.slope = lineEquation(1) - this.y_intercept;
+        this.inverse = function(y){ return (y - self.y_intercept)/self.slope; }
+    }
+    else
+    {
+        this.inverse = function(y){ return this.y_intercept;}
+        this.y_intercept = undefined;
+        this.slope = Infinity;
+    }
 }
 Line.prototype.draw = function()
 {
     // Get point for top of screen
-    var topLeft = s2c([0,0]);
-    var bottomRight = s2c([cm_canvas.width(),cm_canvas.height()]);
-
+    var min = s2c([0,cm_canvas.height()]);
+    var max = s2c([cm_canvas.width(),0]);
+    var pt1, pt2;
     // get x & y value for top left corner
-    var topY = this.equation(topLeft[0]);
-    var topX = this.inverse(topLeft[1]);
-    var bottomY = this.equation(bottomRight[0]);
-    var bottomX = this.inverse(bottomRight[1]);
+    
+    if (this.slope == Infinity)
+    {
+        pt1 = [ this.inverse(), min[1] ];
+        pt2 = [ this.inverse(), max[1] ];
+    }
+    else
+    {
+        // problems...
+        var minY = this.equation(min[0]);
+        var minX = this.inverse(min[1]);
+        var maxY = this.equation(max[0]);
+        var maxX = this.inverse(max[1]);
+
+        
+        if (minY > min[1] && minY < max[1])
+        {
+            pt1 = [ min[0], minY ];
+        }
+        else // if (minX > min[0] && minX < max[0])
+        {
+            pt1 = [ minX, min[1] ];
+        }
+
+        
+        if (maxY < max[1] && maxY > min[1])
+        {
+            pt2 = [ max[0], maxY ];
+        }
+        else // if (maxX < max[0] && maxX > min[0])
+        {
+            pt2 = [ maxX, max[1] ];
+        }
+    }
+
+    
+
+    // draw segment from pt1 to pt2
+    if (this.hide) return;
+
+    pt1 = c2s(pt1);
+    pt2 = c2s(pt2);
+
+    context.lineWidth = 0.5;
+    context.strokeStyle = this.stroke;
+    
+    // normal line
+    context.beginPath();
+
+    context.lineTo(pt1[0], pt1[1]);
+    context.lineTo(pt2[0], pt2[1]);
+    
+    // Make stroke
+    context.stroke();
+}
+Line.prototype.getIntersectPoint = function(line)
+{
+    if (this.slope == line.slope) return false;
+    var x = (this.y_intercept - line.y_intercept)/(line.slope - this.slope);
+    var y = this.equation(x);
+    return [x,y];
+}
+
+var Point = function(coords)
+{
+    this.x = coords[0];
+    this.y = coords[1];
+}
+Point.prototype.draw = function()
+{
+    markPoint([this.x,this.y],true);
 }
 
 // UI of whole app
