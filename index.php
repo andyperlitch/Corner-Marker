@@ -1,7 +1,7 @@
 <?php
 
 // Read the file
-$string = file_get_contents("files/angles2.psxml");
+$string = file_get_contents("files/172-000.psxml");
 
 ?>
 <!DOCTYPE html>
@@ -30,10 +30,8 @@ $string = file_get_contents("files/angles2.psxml");
 			<div class="cm-menu-item" data-menu="file">
 				<a href="#" class="cm-menu-item-header">file</a>
 				<ul class="cm-menu-dropdown">
-					<li><a href="#">New</a></li>
-					<li><a href="#">Open...</a></li>
-					<li><a href="#">Save</a></li>
-					<li><a href="#">Save As...</a></li>
+					<li><a href="#" data-action="file_open">Open...</a></li>
+					<li><a href="#" data-action="file_save">Save</a></li>
 				</ul>
 			</div>
 			<div class="cm-menu-item" data-menu="settings">
@@ -126,6 +124,16 @@ $string = file_get_contents("files/angles2.psxml");
 				
 			</form>
 		
+		</script>
+		<script type="text/html" id="save_form">
+
+			<form method="post" action="/actions/file_save.php">
+				<label for="filename">file name:</label>
+				<input type="text" value="{{filename}}" />
+				<input name="file" type="hidden" value="{{{file}}}" />
+				<input name="encode_test" value="&quot;" />
+			</form>
+
 		</script>
 		<!-- the actual psxml document -->
 		<script type="text/xml" id="project-data"><?php echo $string;?></script>

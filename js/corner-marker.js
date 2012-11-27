@@ -111,11 +111,6 @@ var cm_handlers = {
     lastTool:"cursor",
     
     onkeydown:{
-        // Shift
-        16:function(evt)
-        {
-            cm_handlers.shift_is_down = true;
-        },
         // Space bar
         32:function(evt)
         {
@@ -177,11 +172,6 @@ var cm_handlers = {
         {
             setCurrentTool(cm_handlers.lastTool);
         },
-        // shift
-        16:function(evt)
-        {
-            cm_handlers.shift_is_down = false;
-        },
         91:function(evt)
         {
             setCurrentTool(cm_handlers.lastTool);
@@ -214,7 +204,7 @@ var cm_handlers = {
             dy = evt.originalEvent.wheelDeltaY,
             divisor = ratio * (2/(cm_settings.general.move_sensitivity));
         
-        if (cm_handlers.shift_is_down)
+        if (keysOn[16])
         {
             origin[0] += dy/divisor;
             origin[1] += dx/divisor;
@@ -247,6 +237,17 @@ var cm_handlers = {
                 cm_helpers.outlines = {};
                 
                 cm_selected_length = 0;
+            },
+            file_save:function(evt)
+            {
+                // Grab xml string
+                var xmlString = (new XMLSerializer()).serializeToString(xml);
+                // Create dynamic form
+                var form = ich.save_form({
+                    filename:"cm_save_out",
+                    file:escapeHtml(xmlString)
+                });
+                $(form).submit();
             }
         }
         
@@ -690,7 +691,14 @@ function averagePoints(point1,point2)
 {
     return [ (point1[0] + point2[0])/2, (point1[1] + point2[1])/2 ];
 }
-
+function escapeHtml(unsafe) {
+    return unsafe
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
 
 // ----------------------------------
 //  App Objects
@@ -1164,18 +1172,7 @@ Textlabel.prototype.setup = function($el)
     this.width = this.charWidth * this.string.length;
     
     // Set corners
-    this.points.push(
-        // top-left corner
-        rotatePt([ -(this.width/2) , this.height ],this.rotation),
-        // bottom-left corner
-        rotatePt([ -(this.width/2) , 0 ],this.rotation),
-        // bottom-right corner
-        rotatePt([ (this.width/2) , 0 ],this.rotation),
-        // top-right corner
-        rotatePt([ (this.width/2) , this.height ],this.rotation),
-        // top-left corner
-        rotatePt([ -(this.width/2) , this.height ],this.rotation)
-    );
+    this.resetBounds();
     
     for (var i = 0; i < this.points.length; i++)
     {
@@ -1213,6 +1210,19 @@ Textlabel.prototype.draw = function(only_if_not_selected)
         context.fillText(this.string,newC[0],newC[1]);
     }
     
+}
+Textlabel.prototype.resetBounds = function()
+{
+    // top-left corner
+    this.points[0] = rotatePt([ -(this.width/2) , this.height ],this.rotation);
+    // bottom-left corner
+    this.points[1] = rotatePt([ -(this.width/2) , 0 ],this.rotation);
+    // bottom-right corner
+    this.points[2] = rotatePt([ (this.width/2) , 0 ],this.rotation);
+    // top-right corner
+    this.points[3] = rotatePt([ (this.width/2) , this.height ],this.rotation);
+    // top-left corner
+    this.points[4] = this.points[0].slice();
 }
 
 // Arc object (drawable)
@@ -1978,67 +1988,71 @@ var MarkTool = function(){
                                 {
                                     // Get center for entry text element
                                     var entry_mark_center = addPoints( entryLinePoint, multiplyPoint( normalizeVector( subtractPoint(intersectPoint,entryLinePoint) ), distance_from_edge ) );
-                                    cm_helpers.points["entry_mark_center"] = new Point(addPoints(entry_mark_center,pattern.center));
+                                    // cm_helpers.points["entry_mark_center"] = new Point(addPoints(entry_mark_center,pattern.center));
+                                    // cm_helpers.points["entry_mark_line_pt"] = new Point(addPoints(entryLinePoint,pattern.center),"circle");
 
                                     // Add text object
                                     var entryTextRotation = entryIs == "1" ? lineZCobj.theta_A : lineZCobj.theta_C ;
                                     entryTextRotation %= 2*Math.PI;
-
-                                    // Determine if rotation needs to be flipped
-                                    if 
-                                    ( 
-                                        
-                                        ( entry_mark_center[1] < entryLinePoint[1]  && Math.sin(entryTextRotation + Math.PI/2) > 0 )
-                                        ||
-                                        ( entryLinePoint[1] < entry_mark_center[1] && Math.sin(entryTextRotation + Math.PI/2) < 0 )
-                                        ||
-                                        ( entryLinePoint[0] > entry_mark_center[0] && Math.cos(entryTextRotation + Math.PI/2) > 0 )
-                                        ||
-                                        ( entryLinePoint[0] < entry_mark_center[0] && Math.cos(entryTextRotation + Math.PI/2) < 0 )
-
-                                    ) entryTextRotation += Math.PI;
-                                    entryTextRotation -= Math.PI;
-
-
-
                                     entryTextRotation += Math.PI;
+
                                     var newEntryText = $.parseXML('<text><e/><st d="'+entry_mark+'"/><v d="'+entry_mark_center[0]+','+entry_mark_center[1]+'"/><sa d="'+text_height+' '+entryTextRotation+'"/></text>'),
                                     $newEntryText = $(newEntryText.documentElement);
                                     pattern.$el.append($newEntryText);
                                     var newEntryTextObj = pattern.addTextlabel($newEntryText);
-                                    
+
                                     // Double check if vertical and correctly positioned
+                                    var entryTextOppCtr = averagePoints(newEntryTextObj.points[3], newEntryTextObj.points[4]);
+                                    // cm_helpers.points["entry_mark_opp_center"] = new Point(addPoints( entryTextOppCtr, pattern.center ))
+
+                                    // if entryLinePoint is between entry_mark_center and entryTextOppCtr, flip it
+                                    if ( 
+                                        entryLinePoint[0] > Math.min(entry_mark_center[0],entryTextOppCtr[0]) && 
+                                        entryLinePoint[0] < Math.max(entry_mark_center[0],entryTextOppCtr[0]) &&
+                                        entryLinePoint[1] > Math.min(entry_mark_center[1],entryTextOppCtr[1]) && 
+                                        entryLinePoint[1] < Math.max(entry_mark_center[1],entryTextOppCtr[1]) 
+                                    ) {
+                                        // change xml
+                                        $("sa",$newEntryText).attr("d",text_height+' '+(entryTextRotation+Math.PI));
+                                        // change text rotation
+                                        newEntryTextObj.rotation += Math.PI;
+                                        newEntryTextObj.resetBounds();
+                                    }
                                     
                                 }
                                 if (exit_mark.length)
                                 {
                                     // Get center for exit text element
                                     var exit_mark_center = addPoints( exitLinePoint, multiplyPoint( normalizeVector( subtractPoint( intersectPoint,exitLinePoint) ), distance_from_edge ) );
-                                    cm_helpers.points["exit_mark_center"] = new Point(addPoints(exit_mark_center,pattern.center));
+                                    // cm_helpers.points["exit_mark_center"] = new Point(addPoints(exit_mark_center,pattern.center));
+                                    // cm_helpers.points["exit_mark_line_pt"] = new Point(addPoints(exitLinePoint, pattern.center),"circle");
 
                                     // Add text object
                                     var exitTextRotation = entryIs == "2" ? lineZCobj.theta_A : lineZCobj.theta_C ;
                                     exitTextRotation %= 2*Math.PI;
 
-                                    // Determine if rotation needs to be flipped
-                                    if 
-                                    ( 
-                                        ( exit_mark_center[1] < exitLinePoint[1]  && Math.sin(exitTextRotation + Math.PI/2) > 0 )
-                                        ||
-                                        ( exitLinePoint[1] < exit_mark_center[1] && Math.sin(exitTextRotation + Math.PI/2) < 0 )
-                                        ||
-                                        ( exitLinePoint[0] > exit_mark_center[0] && Math.cos(exitTextRotation + Math.PI/2) > 0 )
-                                        ||
-                                        ( exitLinePoint[0] < exit_mark_center[0] && Math.cos(exitTextRotation + Math.PI/2) < 0 )
-
-                                    ) {
-                                        exitTextRotation += Math.PI;
-                                    }
-
                                     var newExitText = $.parseXML('<text><e/><st d="'+exit_mark+'"/><v d="'+exit_mark_center[0]+','+exit_mark_center[1]+'"/><sa d="'+text_height+' '+exitTextRotation+'"/></text>'),
                                     $newExitText = $(newExitText.documentElement);
                                     pattern.$el.append($newExitText);
                                     var newExitTextObj = pattern.addTextlabel($newExitText);
+
+                                    var exitTextOppCtr = averagePoints(newExitTextObj.points[3], newExitTextObj.points[4]);
+                                    // cm_helpers.points["exit_mark_opp_center"] = new Point(addPoints( exitTextOppCtr, pattern.center ))
+
+                                    // if exitLinePoint is between exit_mark_center and exitTextOppCtr, flip it
+                                    if ( 
+                                        exitLinePoint[0] > Math.min(exit_mark_center[0],exitTextOppCtr[0]) && 
+                                        exitLinePoint[0] < Math.max(exit_mark_center[0],exitTextOppCtr[0]) &&
+                                        exitLinePoint[1] > Math.min(exit_mark_center[1],exitTextOppCtr[1]) && 
+                                        exitLinePoint[1] < Math.max(exit_mark_center[1],exitTextOppCtr[1]) 
+                                    ) {
+                                        // change xml
+                                        $("sa",$newExitText).attr("d",text_height+' '+(exitTextRotation+Math.PI));
+                                        // change text rotation
+                                        newExitTextObj.rotation += Math.PI;
+                                        newExitTextObj.resetBounds();
+
+                                    }
                                 }
 
                             }
@@ -2350,14 +2364,15 @@ Line.prototype.getIntersectPoint = function(line)
     return [x,y];
 }
 
-var Point = function(coords)
+var Point = function(coords,style)
 {
+    this.style = style === undefined ? "" : style;
     this.x = coords[0];
     this.y = coords[1];
 }
 Point.prototype.draw = function()
 {
-    markPoint([this.x,this.y],true);
+    markPoint([this.x,this.y],true,this.style);
 }
 
 // UI of whole app
@@ -2443,7 +2458,6 @@ CmGui.prototype = {
                         cm_canvas.on("mouseup mousedown",clearMenu);
                         
                     })
-                    .on("")
                     // mouseup
                     .on("mouseup",function(evt){
                     
@@ -2477,7 +2491,9 @@ CmGui.prototype = {
                 // Set menu subitem behavior
                 $ul.find("li a").on("mouseup",function(evt)
                 {
-                    $(this).trigger("select");
+                    // Trigger cm.data-action event on canvas
+                    var action = $(this).data("action");
+                    if (action) cm_canvas.trigger("cm."+action);
                     $ul.hide();
                     $heading.removeClass('active');
                     evt.stopPropagation();
@@ -2691,7 +2707,7 @@ CornerMarker = new function()
         });
         
         // Capture certain canvas events
-        cm_canvas.on("mousedown mousemove mouseup mouseover cm.deselect",function(evt){
+        cm_canvas.on("mousedown mousemove mouseup mouseover cm.deselect cm.file_save",function(evt){
             // Send event to current tool
             currentTool.on(evt);
             // Trigger change event on canvas
