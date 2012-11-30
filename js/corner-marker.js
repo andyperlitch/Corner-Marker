@@ -90,27 +90,13 @@ var cm_settings = {
             enable:true,
             display:true
         }
-    }
-}
-
-// Holds the man <canvas> DOM element
-var cm_canvas;
-
-// Object that holds all tool objects
-var cm_tools = {};
-
-// Current canvas coordinates of mouse
-var cm_mouse = [0,0];
-
-// Flag for if there is a cursor point to check
-var cm_cursor_point = false;
-
-// Holds global handlers
-var cm_handlers = {
-    
-    lastTool:"cursor",
-    
-    onkeydown:{
+    },
+    "shortcuts":[
+        /*
+        // ------------------------------------
+        //  KEYDOWN
+        // ------------------------------------
+          
         // Space bar
         32:function(evt)
         {
@@ -152,19 +138,14 @@ var cm_handlers = {
         {
             cm_handlers.setToolToKey("mark");
         }
-    },
-    
-    setToolToKey:function(tool)
-    {
-        if (currentTool.name == tool) return;
-        cm_handlers.lastTool = currentTool.getName();
-        setCurrentTool(tool);
-    },
-    
-    onkeyup:{
+        
+        // ------------------------------------
+        //  KEYUP
+        // ------------------------------------
+        
+
         // Space bar
         32:function(evt)
-        {
             setCurrentTool(cm_handlers.lastTool);
         },
         // option
@@ -176,8 +157,116 @@ var cm_handlers = {
         {
             setCurrentTool(cm_handlers.lastTool);
         }
-    },
+        
+
+        */
+        {
+            title: "Set to Hand",
+            name: "hand",
+            type: "tool",
+            code: 72
+        },
+        {
+            title: "Temporary Hand Tool",
+            name: "hand",
+            type: "tool_t",
+            code: 32
+        },
+        {
+            title: "Set to Cursor",
+            name: "cursor",
+            type: "tool",
+            code: 86
+        },
+        {
+            title: "Set to Zoom",
+            name: "zoom",
+            type: "tool",
+            code: 90
+        },
+        {
+            title: "Temporary Zoom Tool",
+            name: "zoom",
+            type: "tool_t",
+            code: 18
+        },
+        {
+            title: "Set to Corner Marker",
+            name: "mark",
+            type: "tool",
+            code: 67
+        },
+        {
+            title: "Temporary Corner Marker",
+            name: "mark",
+            type: "tool_t",
+            code: [91,17],
+            stopEvent: true
+        },
+        {
+            title: "file > save",
+            name: "cm.file_save",
+            type: "event",
+            code: 83,
+            modkey: 17
+        },
+        {
+            title: "file > open",
+            name: "cm.file_open",
+            type: "event",
+            code: 79,
+            modkey: 17
+        },
+        {
+            title: "Delete selection",
+            name: "cm.delete",
+            type: "event",
+            code: 8,
+            stopEvent:true
+        },
+        {
+            title: "Fit All/Fit Selection",
+            name: "cm.fit_screen",
+            type: "event",
+            code: 70
+        }
+    ]
+}
+
+// Holds the history of actions: to be used with undo cmds
+var cm_history = {};
+
+// Holds the man <canvas> DOM element
+var cm_canvas;
+
+// Object that holds all tool objects
+var cm_tools = {};
+
+// Current canvas coordinates of mouse
+var cm_mouse = [0,0];
+
+// Flag for if there is a cursor point to check
+var cm_cursor_point = false;
+
+// Holds global handlers
+var cm_handlers = {
     
+    lastTool:"cursor",
+    
+    onkeydown:{},
+
+    onkeyup:{},
+    
+    setTool:function(tool)
+    {
+        if (currentTool.name == tool) return;
+        cm_handlers.lastTool = currentTool.getName();
+        setCurrentTool(tool);
+    },
+    setLastTool:function()
+    {
+        setCurrentTool(cm_handlers.lastTool);
+    },
     keydown:function(evt){
         keysOn[evt.keyCode] = true;
         if (typeof cm_handlers.onkeydown[evt.keyCode] == "function")
@@ -221,10 +310,10 @@ var cm_handlers = {
         cm_mouse[0] = evt.offsetX;
         cm_mouse[1] = evt.offsetY;
     },
-    cm:function(evt)
+    cm:function(evt,addl)
     {
         this.namespaces = {
-            deselect:function(evt)
+            deselect:function(evt,addl)
             {
                 // Loop through all of cm_selected, deselect, 
                 // and remove from cm_selected object
@@ -238,21 +327,106 @@ var cm_handlers = {
                 
                 cm_selected_length = 0;
             },
-            file_save:function(evt)
+            file_save:function(evt,addl)
             {
                 // Grab xml string
                 var xmlString = (new XMLSerializer()).serializeToString(xml);
+                
                 // Create dynamic form
                 var form = ich.save_form({
                     filename:"cm_save_out",
                     file:escapeHtml(xmlString)
                 });
+                cm_canvas.unsaved_changes = false;
                 $(form).submit();
+            },
+            file_open:function(evt,addl)
+            {
+                if (cm_canvas.unsaved_changes)
+                {
+                    var c = confirm("Save current file before opening new one?");
+                    if (c) cm_canvas.trigger("cm.file_save");
+                }
+                
+                
+                // Create dynamic form
+                var $form = cm_helpers.open_form || $(ich.open_form({})),
+                    $input = $form.find("input");
+                    
+                $form.ajaxForm({
+                    beforeSubmit:function()
+                    {
+                        // Show loading graphic
+                        $('#cm-loading-icon').removeClass("hide");
+                    },
+                    dataType:'json',
+                    success:function(res)
+                    {
+                        if (res.err)
+                        {
+                            $.pnotify(res.err);
+                        }
+                        else if (res.location)
+                        {
+                            window.location = res.location;
+                        }
+                    },
+                    error:function(xhr)
+                    {
+                        $.pnotify({
+                           title:"Server error",
+                           text:"An error occurred on the server!" 
+                        });
+                    },
+                    complete:function()
+                    {
+                        $('#cm-loading-icon').addClass("hide");
+                        $input.val("");
+                    }
+                });
+                    
+
+                cm_helpers.open_form = $form;
+
+                // Set the change event
+                $input.on("change",function(evt){
+                    $form.submit();
+                    $input.off("change");
+                });
+
+                // Trigger click on file element
+                $input.trigger("click");
+                // Clear keysOn
+                keysOn = [];
+                // Set tool to cursor
+                cm_handlers.setTool("cursor");
+            },
+            change:function(evt,addl)
+            {
+                // console.log(addl);
+                cm_canvas.unsaved_changes = true;
+            },
+            delete:function(evt,addl)
+            {
+                if (cm_selected_length == 0)
+                {
+                    $.pnotify("Select something to delete.");
+                }
+                else
+                {
+                    for (var k in cm_selected)
+                    {
+                        cm_selected[k].remove();
+                        cm_selected_length--;
+                    }
+                    cm_canvas.trigger("cm.deselect");
+                    cm_canvas.trigger("cm.update");
+                }
             }
         }
         
         // Look for namespace handler
-        if ( typeof this.namespaces[evt.namespace] == "function") this.namespaces[evt.namespace](evt);
+        if ( typeof this.namespaces[evt.namespace] == "function") this.namespaces[evt.namespace](evt,addl);
     }
 }
 
@@ -714,7 +888,7 @@ var Pattern = function(i, $el)
     this.index = this.id = i;
     
     // Init items
-    this.items = [];
+    this.items = {};
     
     // Store element
     this.$el = $el;
@@ -754,26 +928,25 @@ var Pattern = function(i, $el)
     // Get polys
     var $polys = $el.find("poly");
     $polys.each(function(i){
-        self.items.push( new Poly(self.index,master_i++,$(this), self.center, self.rotation) );
-        
+        self.items[master_i] = new Poly(self.index,master_i++,$(this), self.center, self.rotation);
     });
     
     // Get lines
     var $lines = $el.find("line");
     $lines.each(function(i){
-       self.items.push( new LineSeg(self.index,master_i++,$(this), self.center, self.rotation) ); 
+       self.items[master_i] = new LineSeg(self.index,master_i++,$(this), self.center, self.rotation); 
     });
     
     // Get Textlabeles
     var $texts = $el.find("text");
     $texts.each(function(){
-        self.items.push( new Textlabel(self.index,master_i++, $(this), self.center, self.rotation) );
+        self.items[master_i] = new Textlabel(self.index,master_i++, $(this), self.center, self.rotation);
     });
     
     // Get arcs
     var $arcs = $el.find("arc");
     $arcs.each(function(){
-        self.items.push( new Arc(self.index, master_i++, $(this), self.center, self.rotation) );
+        self.items[master_i] = new Arc(self.index, master_i++, $(this), self.center, self.rotation);
     });
     
     self.master_i = master_i;
@@ -781,8 +954,7 @@ var Pattern = function(i, $el)
 Pattern.prototype.draw = function()
 {
     // markPoint(this.center,true);
-    var length = this.items.length;
-    for ( var i = 0; i < length; i++ )
+    for ( var i in this.items )
     {
         var item = this.items[i];
         item.draw(true);
@@ -790,17 +962,15 @@ Pattern.prototype.draw = function()
 }
 Pattern.prototype.addTextlabel = function($el)
 {
-    var self = this, new_text = new Textlabel(self.index,self.master_i++,$el, self.center, self.rotation);
-    self.items.push( new_text );
-    // console.log(self.rotation);
-    return new_text;
+    var self = this;
+    self.items[self.master_i] = new Textlabel(self.index,self.master_i++,$el, self.center, self.rotation);
+    return self.items[self.master_i - 1];
 }
 Pattern.prototype.addArc = function($el)
 {
-    var self = this, new_arc = new Arc(self.index, self.master_i++, $el, self.center, self.rotation);
-    self.items.push( new_arc );
-    // console.log(self.rotation);
-    return new_arc;
+    var self = this;
+    self.items[self.master_i] = new Arc(self.index, self.master_i++, $el, self.center, self.rotation);
+    return self.items[self.master_i - 1];
 }
 
 
@@ -952,7 +1122,7 @@ PatternItem.prototype.endStroke = function(render)
             }
             
             // Trigger change on next available cycle
-            setTimeout(function(){cm_canvas.trigger("cm.change");},1000/cm_settings.general.max_frame_rate);
+            setTimeout(function(){cm_canvas.trigger("cm.update");},1000/cm_settings.general.max_frame_rate);
             
         }
     }
@@ -1017,7 +1187,11 @@ PatternItem.prototype.points2canvas = function()
     }
     return cPoints;
 }
-
+PatternItem.prototype.remove = function()
+{
+    this.$el.remove();
+    delete project.patterns[this.pattern_index].items[this.index];
+}
 
 
 // Polyline object (drawable)
@@ -1189,7 +1363,7 @@ Textlabel.prototype.draw = function(only_if_not_selected)
     var newC = c2s(addPoints(rotatePt(this.center,this.pattern_rotation),this.pattern_center));
     context.textBaseline = "alphabetic";
     context.textAlign = "center";
-    context.font = "normal "+(this.fontSize*ratio)+"px monaco";
+    context.font = "normal "+(this.fontSize*ratio)+"px monaco,arial";
     context.fillStyle = this.selected ? cm_settings.plottypes[this.linetype]["active"] : cm_settings.plottypes[this.linetype]["inactive"] ; 
     
     if (this.rotation)
@@ -1312,7 +1486,7 @@ var Tool = function()
     this.keysOn = [];
     
     // Set event handler
-    this.on = function(evtObj)
+    this.on = function(evtObj,addl)
     {
         // Set event type
         var evtType = evtObj.type;
@@ -1324,7 +1498,7 @@ var Tool = function()
         if (typeof this.handlers[evtType] == "function") 
         {
             // Call appropriate handler
-            evtResponse = this.handlers[evtType](evtObj);
+            evtResponse = this.handlers[evtType](evtObj,addl);
             
             // If evtResponse is strict not equal 
             // to true, return without going on.
@@ -1335,7 +1509,7 @@ var Tool = function()
         // pass event to global handlers
         if (typeof cm_handlers[evtType] == "function") 
         {
-            cm_handlers[evtType](evtObj);
+            cm_handlers[evtType](evtObj,addl);
         }
     }
 }
@@ -1558,6 +1732,15 @@ var ZoomTool = function()
             case 16:
                 zoom_out = true;
                 cm_canvas.addClass("out");
+                function removeOutClass(evt)
+                {
+                    if ( evt.keyCode == 16 ) 
+                    {
+                        cm_canvas.removeClass("out");
+                        cm_canvas.off("keyup",removeOutClass);
+                    }
+                }
+                cm_canvas.on("keyup",removeOutClass);
                 break;
             
             default:
@@ -1691,7 +1874,7 @@ var CursorTool = function()
 
 
         // Update canvas after next refresh
-        cm_canvas.trigger("cm.change");
+        cm_canvas.trigger("cm.update");
         cm_cursor_point = false;
         delete cm_helpers["cursor-marquee"];
     }
@@ -2056,7 +2239,15 @@ var MarkTool = function(){
                                 }
 
                             }
-                            cm_canvas.trigger("cm.change");
+                            cm_canvas.trigger("cm.update");
+                            // trigger change with undo action
+                            cm_canvas.trigger("cm.change",function(){
+                                if ($newEntryText.length) 
+                                {
+                                    $newEntryText.remove();
+                                    
+                                }
+                            });
                             $(this).dialog("close");
                             
                         }
@@ -2078,10 +2269,19 @@ var MarkTool = function(){
                 },
                 open:function(evt,ui)
                 {
-                    cm_handlers.setToolToKey("cursor");
+                    var $this = $(this);
+                    cm_handlers.setTool("cursor");
                     cm_canvas.trigger("disable");
                     // $(this).find("#entry_mark").focus();
-                    setTimeout(function(){ $('form #entry_mark').last().focus();},0);
+                    setTimeout(function(){ 
+						$('form #entry_mark').last().focus();
+                        $this.on("keypress",function(evt){
+                            if (evt.which == 13)
+                            {
+                                $this.parent().find('.ui-dialog-buttonpane button:first').trigger("click");
+                            }
+                        })
+					},0);
                 },
                 close:function(evt,ui)
                 {
@@ -2567,15 +2767,14 @@ CmGui.prototype = {
     }
 }
 
-
-
 // ----------------------------------
 //  App Object
 // ----------------------------------
 CornerMarker = new function()
 {
     // Var to hold wait flag for redraw() function
-    var wait = false;
+    var wait = false,
+        self = this;
     
     // Initializes all patterns and their items
     function initProject(xml)
@@ -2694,7 +2893,10 @@ CornerMarker = new function()
         
         // Set the initial tool (cursor)
         setCurrentTool("cursor");
-        
+    }
+    
+    function initListeners()
+    {
         // Capture certain window events
         $win.on("keydown keyup mousewheel scroll onscroll",function(evt){
             if (!cm_canvas.disabled)
@@ -2702,20 +2904,20 @@ CornerMarker = new function()
                 // Send event to current tool
                 currentTool.on(evt);
                 // Trigger change event on canvas
-                cm_canvas.trigger("cm.change");
+                cm_canvas.trigger("cm.update");
             }
         });
         
         // Capture certain canvas events
-        cm_canvas.on("mousedown mousemove mouseup mouseover cm.deselect cm.file_save",function(evt){
+        cm_canvas.on("mousedown mousemove mouseup mouseover cm.deselect cm.file_save cm.file_open cm.fit_screen cm.change cm.delete",function(evt,addl){
             // Send event to current tool
-            currentTool.on(evt);
+            currentTool.on(evt,addl);
             // Trigger change event on canvas
-            cm_canvas.trigger("cm.change");
+            cm_canvas.trigger("cm.update");
             evt.stopPropagation();
         });
     }
-    
+
     // The main loop controller for the app
     function redraw()
     {
@@ -2763,7 +2965,71 @@ CornerMarker = new function()
         // cm_cursor_point = false;
     }
     
-    
+    // Sets shortcuts (public so that this can be called outside)
+    this.resetShortcuts = function()
+    {
+        // Reset handlers
+        cm_handlers.onkeydown = {};
+        cm_handlers.onkeyup = {};
+        
+        function createShortcut(shortcut,action,cm_handler_key){
+            // Look for handler key other than keydown
+            if (!cm_handler_key || !cm_handlers[cm_handler_key]) cm_handler_key = "onkeydown";
+            
+            // Check if multiple keys are bound to this shortcut
+            if (shortcut.code instanceof Array)
+            {
+                for (var i=0; i < shortcut.code.length; i++) {
+                    cm_handlers[cm_handler_key][shortcut.code[i]] = createKeyHandler(shortcut,action);
+                }
+            }
+            // Just one key to be bound
+            else
+            {
+                cm_handlers[cm_handler_key][shortcut.code] = createKeyHandler(shortcut,action);
+            }
+        }
+        
+        // the function to create handler functions
+        function createKeyHandler(shortcut,action){
+            return function(evt){
+                
+                // Check if modkeys are required
+                if (shortcut.modkey instanceof Array)
+                {
+                    for (var m=0; m < shortcut.modkey.length; m++) {
+                        if (!keysOn[shortcut.modkey[m]]) return true ;
+                    }
+                }
+                else if (typeof shortcut.modkey == "number")
+                {
+                    if (!keysOn[shortcut.modkey]) return true ;
+                }
+                
+                action(shortcut.name);
+                if (shortcut.stopEvent) evt.preventDefault();
+            }
+        }
+        
+        // Loop through cm_settings.shortcuts
+        for (var i = 0; i < cm_settings.shortcuts.length; i++) {
+            var cut = cm_settings.shortcuts[i];
+            switch (cut.type)
+            {
+                case "tool":
+                    createShortcut(cut,cm_handlers.setTool);
+                break;
+                case "tool_t":
+                    createShortcut(cut,cm_handlers.setTool);
+                    createShortcut(cut,cm_handlers.setLastTool,"onkeyup");
+                break;
+                case "event":
+                    createShortcut(cut,function(name){cm_canvas.trigger(name)});
+                break;
+            }
+
+        };
+    }
     
     // ----------------------------------
     //  Main initialization method
@@ -2788,15 +3054,13 @@ CornerMarker = new function()
         
         // Initialize project
         initProject( xml );
-        
-        // Initialize tools
         initTools();
-        
-        // Initialize GUI
+        initListeners();
+        self.resetShortcuts();
         var gui = new CmGui();
         
         // Set up redraw listener.
-        cm_canvas.on("cm.change",function(){
+        cm_canvas.on("cm.update",function(){
             redraw();
         });
         
@@ -2824,8 +3088,11 @@ window.onload = function()
 // ----------------------------------
 //  Hold on!
 // ----------------------------------
-// window.onbeforeunload = function(evt){
-//     var retVal = "Stop! Are you sure you want to leave? Any changes you have made will be lost.";
-//     evt.returnValue = retVal;
-//     return retVal;
-// };
+window.onbeforeunload = function(evt){
+    if (cm_canvas.unsaved_changes)
+    {
+        var retVal = "You have made changes to this file. Are you sure you want to leave without saving?";
+        evt.returnValue = retVal;
+        return retVal;
+    }
+};

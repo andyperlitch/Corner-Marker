@@ -224,6 +224,19 @@ canvas[data-tool="mark"]{
 }
 
 /* ----------------------------------
+//  Loading graphic
+// --------------------------------*/
+#cm-loading-icon {
+	position:absolute;
+	background:#000 url('images/ajax-loader.gif') no-repeat scroll top left;
+	width:126px;
+	height:22px;
+	top:50px;
+	left:45%;
+	z-index: 1;
+}
+
+/* ----------------------------------
 //  pnotify overrides
 // --------------------------------*/
 .ui-pnotify-icon, .ui-pnotify-icon span{

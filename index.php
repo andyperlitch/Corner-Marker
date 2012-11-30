@@ -1,7 +1,10 @@
 <?php
 
+// Set the filename
+$filename = ( isset($_GET['file']) && file_exists("files/{$_GET['file']}") ) ? $_GET['file'] : "172-000.psxml" ;
+
 // Read the file
-$string = file_get_contents("files/172-000.psxml");
+$string = file_get_contents("files/$filename");
 
 ?>
 <!DOCTYPE html>
@@ -25,6 +28,7 @@ $string = file_get_contents("files/172-000.psxml");
 		<!-- <script type="text/javascript" data-main="js/main" src="js/vendor/require.js"></script> -->
     </head>
     <body>
+		<div id="cm-loading-icon" class="hide"></div>
 		<div id="cm-menu-bar">
 			<h1>Corner Marker</h1>
 			<div class="cm-menu-item" data-menu="file">
@@ -76,8 +80,8 @@ $string = file_get_contents("files/172-000.psxml");
 		</form>
 		
 		<div id="canvas-disabler"></div>
-		<!-- template for marking dialog -->
-		<script id="mark_dialog" type="text/html">
+		<!-- templates -->
+		<script type="text/html" id="mark_dialog">
 		
 			<form class="mark-dialog" title="Add Marks to this corner">
 				
@@ -135,17 +139,33 @@ $string = file_get_contents("files/172-000.psxml");
 			</form>
 
 		</script>
+		<script type="text/html" id="open_form">
+		
+			<form method="post" action="/actions/file_open.php" enctype="multipart/form-data" class="hide">
+				<input type="file" name="xml_file" class="xml_file">
+			</form>
+			
+		</script>
+		
 		<!-- the actual psxml document -->
 		<script type="text/xml" id="project-data"><?php echo $string;?></script>
+		
 		<!-- icanhaz -->
-		<script src="js/vendor/icanhaz.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/vendor/icanhaz.js"></script>
+		
 		<!-- jquery -->
-		<script src="js/vendor/jquery-1.8.2.js" type="text/javascript"></script>
-		<!-- <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script> -->
+		<script src="js/vendor/jquery-1.8.2.js"></script>
+		
 		<!-- jquery ui -->
-		<script src="js/vendor/jquery-ui-1.9.1.custom.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/vendor/jquery-ui-1.9.1.custom.min.js"></script>
+		<!-- <script src="js/jqueryui_settings.js"></script> -->
+		
+		<!-- jquery plugins -->
+		<script src="js/vendor/jquery.form.js"></script>
+		
 		<!-- pnotify -->
-		<script src="js/vendor/jquery.pnotify.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/vendor/jquery.pnotify.min.js"></script>
+		
 		<!-- main app file -->
 		<script src="js/corner-marker.js"></script>
 		
