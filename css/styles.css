@@ -100,6 +100,11 @@ div#canvas-disabler{
 // --------------------------------*/
 #cm-settings-frm{
 	display:none;
+	width:100em;
+}
+#settings_editor{
+	background-color:#000;
+	color:#FFF;
 }
 
 

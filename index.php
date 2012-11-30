@@ -56,26 +56,13 @@ $string = file_get_contents("files/$filename");
 				<button title="mark: mark a corner with up to three symbols" class="cm-tool mark-tool" data-tool="mark">mark</button>
 			</li>
 		</ul>
-		<form id="cm-settings-frm">
+		<form id="cm-settings-frm" title="Settings">
 			
-			<div id="cm-setting-sections">
-				<h3>General</h3>
-				<fieldset>
+				<textarea name="settings_editor" id="settings_editor" cols="100" rows="30">
 					
-				</fieldset>
-				<h3>Canvas</h3>
-				<fieldset>
 					
-				</fieldset>
-				<h3>Tools</h3>
-				<fieldset>
 					
-				</fieldset>
-				<h3>Plot Types</h3>
-				<fieldset>
-					
-				</fieldset>
-			</div>
+				</textarea>
 			
 		</form>
 		
@@ -141,7 +128,7 @@ $string = file_get_contents("files/$filename");
 		</script>
 		<script type="text/html" id="open_form">
 		
-			<form method="post" action="/actions/file_open.php" enctype="multipart/form-data" class="hide">
+			<form method="post" action="actions/file_open.php" enctype="multipart/form-data" class="hide">
 				<input type="file" name="xml_file" class="xml_file">
 			</form>
 			

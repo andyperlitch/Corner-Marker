@@ -21,8 +21,12 @@
 // past to global scope (eg. shift)
 var keysOn = [];
 
+// Try grabbing settings stored in localStorage
+
+
 // Object to hold application settings
-var cm_settings = {
+var cm_settings = {}
+var cm_default_settings = {
     
     "general":{
         "max_frame_rate":50,
@@ -92,145 +96,138 @@ var cm_settings = {
         }
     },
     "shortcuts":[
-        /*
-        // ------------------------------------
-        //  KEYDOWN
-        // ------------------------------------
-          
-        // Space bar
-        32:function(evt)
-        {
-            return cm_handlers.setToolToKey("hand");
-        },
-        // v
-        86:function(evt)
-        {
-            return cm_handlers.setToolToKey("cursor");
-        },
-        // h
-        72:function(evt)
-        {
-            return cm_handlers.setToolToKey("hand");
-        },
-        // z
-        90:function(evt)
-        {
-            return cm_handlers.setToolToKey("zoom");
-        },
-        // option
-        18:function(evt)
-        {
-            return cm_handlers.setToolToKey("zoom");
-        },
-        // delete
-        8:function(evt)
-        {
-            evt.preventDefault();
-        },
-        // cmd
-        91:function(evt)
-        {
-            cm_handlers.setToolToKey("mark");
-            return false;
-        },
-        // c
-        67:function(evt)
-        {
-            cm_handlers.setToolToKey("mark");
-        }
-        
-        // ------------------------------------
-        //  KEYUP
-        // ------------------------------------
-        
-
-        // Space bar
-        32:function(evt)
-            setCurrentTool(cm_handlers.lastTool);
-        },
-        // option
-        18:function(evt)
-        {
-            setCurrentTool(cm_handlers.lastTool);
-        },
-        91:function(evt)
-        {
-            setCurrentTool(cm_handlers.lastTool);
-        }
-        
-
-        */
         {
             title: "Set to Hand",
             name: "hand",
             type: "tool",
-            code: 72
+            code: "h"
         },
         {
             title: "Temporary Hand Tool",
             name: "hand",
             type: "tool_t",
-            code: 32
+            code: "space"
         },
         {
             title: "Set to Cursor",
             name: "cursor",
             type: "tool",
-            code: 86
+            code: "v"
         },
         {
             title: "Set to Zoom",
             name: "zoom",
             type: "tool",
-            code: 90
+            code: "z"
         },
         {
             title: "Temporary Zoom Tool",
             name: "zoom",
             type: "tool_t",
-            code: 18
+            code: "alt"
         },
         {
             title: "Set to Corner Marker",
             name: "mark",
             type: "tool",
-            code: 67
+            code: "c"
         },
         {
             title: "Temporary Corner Marker",
             name: "mark",
             type: "tool_t",
-            code: [91,17],
+            code: ["cmd","ctrl"],
             stopEvent: true
         },
         {
             title: "file > save",
             name: "cm.file_save",
             type: "event",
-            code: 83,
-            modkey: 17
+            code: "s",
+            modkey: "control"
         },
         {
             title: "file > open",
             name: "cm.file_open",
             type: "event",
-            code: 79,
-            modkey: 17
+            code: "o",
+            modkey: "ctrl"
         },
         {
             title: "Delete selection",
             name: "cm.delete",
             type: "event",
-            code: 8,
+            code: "delete",
             stopEvent:true
         },
         {
             title: "Fit All/Fit Selection",
             name: "cm.fit_screen",
             type: "event",
-            code: 70
+            code: "f"
         }
     ]
+}
+
+var key_mappings = {
+    "0":48,
+    "1":49,
+    "2":50,
+    "3":51,
+    "4":52,
+    "5":53,
+    "6":54,
+    "7":55,
+    "8":56,
+    "9":57,
+    "a":65,
+    "q":81,
+    "w":87,
+    "e":69,
+    "d":68,
+    "r":82,
+    "f":70,
+    "t":84,
+    "g":71,
+    "y":89,
+    "h":72,
+    "u":85,
+    "j":74,
+    "i":73,
+    "k":75,
+    "o":79,
+    "l":76,
+    "p":80,
+    ";":186,
+    "[":219,
+    "'":222,
+    "]":221,
+    "z":90,
+    "x":88,
+    "c":67,
+    "v":86,
+    "b":66,
+    "n":78,
+    "m":77,
+    ",":188,
+    ".":190,
+    "/":191,
+    "shift":16,
+    "enter":13,
+    "return":13,
+    "cmd":91,
+    "command":91,
+    "option":18,
+    "alt":18,
+    "ctrl":17,
+    "control":17,
+    "`":192,
+    "-":189,
+    "=":187,
+    "delete":8,
+    "\\":220,
+    "space":32,
+    "spacebar":32
 }
 
 // Holds the history of actions: to be used with undo cmds
@@ -371,7 +368,7 @@ var cm_handlers = {
                             window.location = res.location;
                         }
                     },
-                    error:function(xhr)
+                    error:function(xhr,textStatus,errorThrown)
                     {
                         $.pnotify({
                            title:"Server error",
@@ -422,6 +419,110 @@ var cm_handlers = {
                     cm_canvas.trigger("cm.deselect");
                     cm_canvas.trigger("cm.update");
                 }
+            },
+            fit_screen:function(evt,addl)
+            {
+                // -----------------------------------------------------
+                //  Calculate visible range of pattern coordinate plane.
+                // -----------------------------------------------------
+                // get all min/max points in project
+                var allMinMaxPoints = [], min = [], max = [];
+
+                // Check for selected items
+                if (cm_selected_length == 0)
+                {
+                    // Loop through patterns...
+                    for (var j in project.patterns)
+                    {
+                        // Set current pattern local var
+                        var cur_pattern = project.patterns[j];
+                        // Get center
+                        var pattern_center = cur_pattern.center;
+                        // Loop through items...
+                        for (var k in cur_pattern.items)
+                        {
+                            // Set current item to local var
+                            var cur_item = cur_pattern.items[k];
+                            // Push min and max
+                            allMinMaxPoints.push( cur_item.min, cur_item.max);
+                        }
+                    }
+                }
+                else
+                {
+                    for (var g in cm_selected)
+                    {
+                        var cur_item = cm_selected[g];
+                        allMinMaxPoints.push( cur_item.min, cur_item.max);
+                    }
+                }
+
+                // Go through all points, set max and min values
+                var pointsLen = allMinMaxPoints.length;
+                for (var k = 0; k < pointsLen; k++)
+                {
+                    var coords = allMinMaxPoints[k];
+                    // check min x
+                    if (min[0] == undefined || coords[0] < min[0]) min[0] = coords[0];
+                    // check max x
+                    if (max[0] == undefined || coords[0] > max[0]) max[0] = coords[0];
+                    // check min y
+                    if (min[1] == undefined || coords[1] < min[1]) min[1] = coords[1];
+                    // check max y
+                    if (max[1] == undefined || coords[1] > max[1]) max[1] = coords[1];
+                }
+
+                // Get the x & y ranges of visibility
+                var xRange = max[0] - min[0];
+                var yRange = max[1] - min[1];
+
+                // Get prospective x&y pixels per unit ratios
+                var xRatio = cm_canvas.width() / xRange;
+                var yRatio = cm_canvas.height() / yRange;
+
+                // Set the master ratio
+                ratio = Math.min(xRatio, yRatio);
+
+                // which plane was used?
+                var mapping_plane = (ratio == xRatio) ? "x" : "y";
+
+                // Determine the psxml coordinates of the top left corner of the canvas (0,0)
+
+                // if x was used, the visible area should be
+                // vertically-centerd, so the min[0] is correct.
+                // min[1] - half of the extra space on the y-plane would be used.
+                // if y was used, the visible area should be
+                // horizontally centered
+
+                // Coords for top left corner of canvas (in ps units)
+                var x_coord, y_coord;
+
+                if (mapping_plane == "x") 
+                {
+                    // calculate y offset
+                    var offset_y = ((cm_canvas.height() - yRange * ratio)/2)/ratio;
+                    y_coord = max[1] + offset_y;
+
+                    // x is at 0
+                    x_coord = min[0];
+                }
+                else
+                {
+                    // y is at 0
+                    y_coord = max[1]
+
+                    // calculate x offset
+                    var offset_x = ((cm_canvas.width() - xRange * ratio)/2)/ratio;
+                    x_coord = min[0] - offset_x;
+                }
+
+                // Extract origin from these coordinates
+                origin = [
+                    0 - x_coord,
+                    0 + y_coord
+                ];
+
+                cm_canvas.trigger("cm.update");
             }
         }
         
@@ -528,7 +629,14 @@ if (CP.lineTo) {
 // ----------------------------------
 //  Global Methods
 // ----------------------------------
-
+// Checks for local storage
+function supports_html5_storage() {
+  try {
+    return 'localStorage' in window && window['localStorage'] !== null;
+  } catch (e) {
+    return false;
+  }
+}
 // Method to set the current tool
 function setCurrentTool(tool) 
 {
@@ -2721,23 +2829,29 @@ CmGui.prototype = {
             
             // Set dialog widget
             $settingFrm.dialog({
+                width:"50em",
                 autoOpen: false,
                 buttons:{
                     Ok: function(){
-                        $(this).dialog("close");
+
+                        try {
+                            var new_settings_string = $("#settings_editor",$(this)).val();
+                            var new_settings = $.parseJSON(new_settings_string);
+                            cm_settings = new_settings;
+                            CornerMarker.resetShortcuts();
+                            window.localStorage["cm_settings"] = new_settings_string;
+                            $(this).dialog("close");
+                        } catch (e) {
+                            $.pnotify({
+                                "title":"Invalid Setting Syntax",
+                                "text":"Something that you changed in the settings file is not valid. You may have forgotten a comma, missed a close bracket, or used '[' instead of '{' somewhere."
+                            });
+                        }
                     }
                 },
-                resizeStart:function(){
+                open:function(){
                     cm_canvas.trigger("disable");
-                },
-                resizeStop:function(){
-                    cm_canvas.trigger("enable");
-                },
-                dragStart:function(){
-                    cm_canvas.trigger("disable");
-                },
-                dragStop:function(){
-                    cm_canvas.trigger("enable");
+                    $("#settings_editor",$(this)).html(JSON.stringify(cm_settings, null, 4));
                 },
                 close:function(){
                     cm_canvas.trigger("enable");
@@ -2789,96 +2903,7 @@ CornerMarker = new function()
             project.patterns.push( new Pattern(i, $(this)) );
         });
         
-        // -----------------------------------------------------
-        //  Calculate visible range of pattern coordinate plane.
-        // -----------------------------------------------------
-        
-        // get all min/max points in project
-        var allMinMaxPoints = [], min = [], max = [];
-        
-        // Loop through patterns...
-        for (j in project.patterns)
-        {
-            // Set current pattern local var
-            var cur_pattern = project.patterns[j];
-            // Get center
-            var pattern_center = cur_pattern.center;
-            // Loop through items...
-            for (k in cur_pattern.items)
-            {
-                // Set current item to local var
-                var cur_item = cur_pattern.items[k];
-                // Push min and max
-                allMinMaxPoints.push( cur_item.min, cur_item.max);
-            }
-        }
-        
-        // Go through all points, set max and min values
-        var pointsLen = allMinMaxPoints.length;
-        for (var k = 0; k < pointsLen; k++)
-        {
-            var coords = allMinMaxPoints[k];
-            // check min x
-            if (min[0] == undefined || coords[0] < min[0]) min[0] = coords[0];
-            // check max x
-            if (max[0] == undefined || coords[0] > max[0]) max[0] = coords[0];
-            // check min y
-            if (min[1] == undefined || coords[1] < min[1]) min[1] = coords[1];
-            // check max y
-            if (max[1] == undefined || coords[1] > max[1]) max[1] = coords[1];
-        }
-        
-        // Get the x & y ranges of visibility
-        var xRange = max[0] - min[0];
-        var yRange = max[1] - min[1];
-        
-        // Get prospective x&y pixels per unit ratios
-        var xRatio = cm_canvas.width() / xRange;
-        var yRatio = cm_canvas.height() / yRange;
-        
-        // Set the master ratio
-        ratio = Math.min(xRatio, yRatio);
-        
-        // which plane was used?
-        var mapping_plane = (ratio == xRatio) ? "x" : "y";
-        
-        // Determine the psxml coordinates of the top left corner of the canvas (0,0)
-        
-        // if x was used, the visible area should be
-        // vertically-centerd, so the min[0] is correct.
-        // min[1] - half of the extra space on the y-plane would be used.
-        // if y was used, the visible area should be
-        // horizontally centered
-        
-        // Coords for top left corner of canvas (in ps units)
-        var x_coord, y_coord;
-        
-        if (mapping_plane == "x") 
-        {
-            // calculate y offset
-            var offset_y = ((cm_canvas.height() - yRange * ratio)/2)/ratio;
-            y_coord = max[1] + offset_y;
-            
-            // x is at 0
-            x_coord = min[0];
-        }
-        else
-        {
-            // y is at 0
-            y_coord = max[1]
-            
-            // calculate x offset
-            var offset_x = ((cm_canvas.width() - xRange * ratio)/2)/ratio;
-            x_coord = min[0] - offset_x;
-        }
-        
-        // Extract origin from these coordinates
-        origin = [
-            0 - x_coord,
-            0 + y_coord
-        ];
-        
-        redraw();
+        cm_canvas.trigger("cm.fit_screen");
         
     }
     
@@ -2915,6 +2940,16 @@ CornerMarker = new function()
             // Trigger change event on canvas
             cm_canvas.trigger("cm.update");
             evt.stopPropagation();
+        });
+        
+        // Set up redraw listener.
+        cm_canvas.on("cm.update",function(){
+            redraw();
+        });
+        
+        // Set up mouseleave listener
+        cm_canvas.on("mouseleave",function(){
+            cm_canvas.trigger("mouseup");
         });
     }
 
@@ -2980,13 +3015,13 @@ CornerMarker = new function()
             if (shortcut.code instanceof Array)
             {
                 for (var i=0; i < shortcut.code.length; i++) {
-                    cm_handlers[cm_handler_key][shortcut.code[i]] = createKeyHandler(shortcut,action);
+                    cm_handlers[cm_handler_key][key_mappings[shortcut.code[i]]] = createKeyHandler(shortcut,action);
                 }
             }
             // Just one key to be bound
             else
             {
-                cm_handlers[cm_handler_key][shortcut.code] = createKeyHandler(shortcut,action);
+                cm_handlers[cm_handler_key][key_mappings[shortcut.code]] = createKeyHandler(shortcut,action);
             }
         }
         
@@ -3053,21 +3088,13 @@ CornerMarker = new function()
         xml = $.parseXML($("#project-data").html());
         
         // Initialize project
-        initProject( xml );
         initTools();
         initListeners();
+        initProject( xml );
+        
+        
         self.resetShortcuts();
         var gui = new CmGui();
-        
-        // Set up redraw listener.
-        cm_canvas.on("cm.update",function(){
-            redraw();
-        });
-        
-        // Set up mouseleave listener
-        cm_canvas.on("mouseleave",function(){
-            cm_canvas.trigger("mouseup");
-        })
     }
 }
 
@@ -3079,6 +3106,20 @@ CornerMarker = new function()
 // ----------------------------------
 window.onload = function()
 {
+    // Check if localStorage is allowed
+    if ( supports_html5_storage() )
+    {
+        try {
+            if ( window.localStorage["cm_settings"] != undefined ) cm_settings = $.parseJSON(window.localStorage["cm_settings"]);
+            else cm_settings = cm_default_settings;
+        } catch (e) {
+            cm_settings = cm_default_settings;
+        }
+    }
+    else
+    {
+        cm_settings = cm_default_settings;
+    }
     CornerMarker.run();
 }
 
