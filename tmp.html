@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+		<meta charset="utf-8">
+		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+		<title></title>
+    </head>
+    <body>
+		
+		<input>
+		
+		<script>
+		
+		var obj = {};
+		
+		$("input").on("keyup",function(evt){
+			if ($.trim($(this).val()).length)
+			{
+				obj[ ($(this).val()).substr(0,1) ] = evt.which;
+				$(this).val("");
+			}
+			else {
+				var name = prompt("Name for key:");
+				obj[ name ] = evt.which;
+			}
+			
+		});
+		
+		
+		</script>
+		
+	</body>
+</html>

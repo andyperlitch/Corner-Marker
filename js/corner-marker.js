@@ -26,7 +26,159 @@ var keysOn = [];
 
 // Object to hold application settings
 var cm_settings = {}
-var cm_default_settings = {
+var cm_default_settings = navigator.appVersion.indexOf("Win")!=-1 
+? {
+    "general": {
+        "max_frame_rate": 50,
+        "move_sensitivity": 0.5
+    },
+    "canvas": {
+        "background_color": "#000000",
+        "point_color": "#DDD",
+        "point_diameter": 4,
+        "padding": [
+            50,
+            50
+        ],
+        "marquee_color": "#CCC"
+    },
+    "tools": {
+        "zoom": {
+            "zoom_amt": 0.2,
+            "mousewheel_amt": 0.5
+        },
+        "cursor": {
+            "max_items_with_points": 400,
+            "click_radius": 6,
+            "min_marquee_area": 16
+        },
+        "mark": {
+            "min_corner_angle": 30,
+            "default_label_height": 0.375,
+            "default_edge_distance": 0.125,
+            "same_point_tolerance": 0.02,
+            "max_mark_chars": 3
+        }
+    },
+    "plottypes": {
+        "default": {
+            "display_name": "Default",
+            "inactive": "#",
+            "enable": false,
+            "display": true
+        },
+        "plot": {
+            "display_name": "Plot",
+            "inactive": "#00CC00",
+            "active": "#00FF00",
+            "enable": true,
+            "display": true
+        },
+        "ref": {
+            "display_name": "Reference",
+            "inactive": "#CCCC00",
+            "active": "#FFFF00",
+            "enable": true,
+            "display": true
+        },
+        "cut": {
+            "display_name": "Cut",
+            "inactive": "#CC0000",
+            "active": "#FF0000",
+            "enable": true,
+            "display": true
+        },
+        "cut2": {
+            "display_name": "Cut 2",
+            "inactive": "#8800FF",
+            "actived": "#CC00FF",
+            "enable": true,
+            "display": true
+        }
+    },
+    "shortcuts": [
+        {
+            "title": "Set to Hand",
+            "name": "hand",
+            "type": "tool",
+            "key": "h"
+        },
+        {
+            "title": "Temporary Hand Tool",
+            "name": "hand",
+            "type": "tool_t",
+            "key": "space"
+        },
+        {
+            "title": "Set to Cursor",
+            "name": "cursor",
+            "type": "tool",
+            "key": "v"
+        },
+        {
+            "title": "Set to Zoom",
+            "name": "zoom",
+            "type": "tool",
+            "key": "z"
+        },
+        {
+            "title": "Temporary Zoom Tool",
+            "name": "zoom",
+            "type": "tool_t",
+            "key": "alt"
+        },
+        {
+            "title": "Set to Corner Marker",
+            "name": "mark",
+            "type": "tool",
+            "key": "c"
+        },
+        {
+            "title": "Temporary Corner Marker",
+            "name": "mark",
+            "type": "tool_t",
+            "key": ["shift","ctrl"]
+        },
+        {
+            "title": "Toggle Draw Semi-Circle option in Marker dialog",
+            "name": "cm.toggle_semi_circle",
+            "type": "event",
+            "key": "alt+c"
+        },
+        {
+            "title": "Toggle Rename Pattern option in Marker dialog",
+            "name": "cm.toggle_rename_pattern",
+            "type": "event",
+            "key": "alt+r"
+        },
+        {
+            "title": "file > save",
+            "name": "cm.file_save",
+            "type": "event",
+            "key": "alt+s"
+        },
+        {
+            "title": "file > open",
+            "name": "cm.file_open",
+            "type": "event",
+            "key": "alt+o"
+        },
+        {
+            "title": "Delete selection",
+            "name": "cm.delete",
+            "type": "event",
+            "key": "delete",
+            "stopEvent": true
+        },
+        {
+            "title": "Fit All/Fit Selection",
+            "name": "cm.fit_screen",
+            "type": "event",
+            "key": "f"
+        }
+    ]
+}
+: {
     
     "general":{
         "max_frame_rate":50,
@@ -100,71 +252,81 @@ var cm_default_settings = {
             title: "Set to Hand",
             name: "hand",
             type: "tool",
-            code: "h"
+            key: "h"
         },
         {
             title: "Temporary Hand Tool",
             name: "hand",
             type: "tool_t",
-            code: "space"
+            key: "space"
         },
         {
             title: "Set to Cursor",
             name: "cursor",
             type: "tool",
-            code: "v"
+            key: "v"
         },
         {
             title: "Set to Zoom",
             name: "zoom",
             type: "tool",
-            code: "z"
+            key: "z"
         },
         {
             title: "Temporary Zoom Tool",
             name: "zoom",
             type: "tool_t",
-            code: "alt"
+            key: "alt"
         },
         {
             title: "Set to Corner Marker",
             name: "mark",
             type: "tool",
-            code: "c"
+            key: "c"
         },
         {
             title: "Temporary Corner Marker",
             name: "mark",
             type: "tool_t",
-            code: ["cmd","ctrl"],
+            key: ["cmd","ctrl"],
             stopEvent: true
+        },
+        {
+            title: "Toggle Draw Semi-Circle option in Marker dialog",
+            name: "cm.toggle_semi_circle",
+            type: "event",
+            key: "ctrl+c"
+        },
+        {
+            title: "Toggle Rename Pattern option in Marker dialog",
+            name: "cm.toggle_rename_pattern",
+            type: "event",
+            key: "ctrl+r"
         },
         {
             title: "file > save",
             name: "cm.file_save",
             type: "event",
-            code: "s",
-            modkey: "control"
+            key: "ctrl+s"
         },
         {
             title: "file > open",
             name: "cm.file_open",
             type: "event",
-            code: "o",
-            modkey: "ctrl"
+            key: "ctrl+o"
         },
         {
             title: "Delete selection",
             name: "cm.delete",
             type: "event",
-            code: "delete",
+            key: "delete",
             stopEvent:true
         },
         {
             title: "Fit All/Fit Selection",
             name: "cm.fit_screen",
             type: "event",
-            code: "f"
+            key: "f"
         }
     ]
 }
@@ -180,37 +342,39 @@ var key_mappings = {
     "7":55,
     "8":56,
     "9":57,
-    "a":65,
-    "q":81,
-    "w":87,
-    "e":69,
-    "d":68,
-    "r":82,
-    "f":70,
-    "t":84,
-    "g":71,
-    "y":89,
-    "h":72,
-    "u":85,
-    "j":74,
-    "i":73,
-    "k":75,
-    "o":79,
-    "l":76,
-    "p":80,
+    "q": 81,
+    "w": 87,
+    "e": 69,
+    "r": 82,
+    "t": 84,
+    "y": 89,
+    "u": 85,
+    "i": 73,
+    "o": 79,
+    "p": 80,
+    "a": 65,
+    "s": 83,
+    "d": 68,
+    "f": 70,
+    "g": 71,
+    "h": 72,
+    "j": 74,
+    "k": 75,
+    "l": 76,
+    "'": 222,
+    "z": 90,
+    "x": 88,
+    "c": 67,
+    "v": 86,
+    "b": 66,
+    "n": 78,
+    "m": 77,
+    ".": 190,
     ";":186,
     "[":219,
     "'":222,
     "]":221,
-    "z":90,
-    "x":88,
-    "c":67,
-    "v":86,
-    "b":66,
-    "n":78,
-    "m":77,
     ",":188,
-    ".":190,
     "/":191,
     "shift":16,
     "enter":13,
@@ -224,7 +388,7 @@ var key_mappings = {
     "`":192,
     "-":189,
     "=":187,
-    "delete":8,
+    "delete":46,
     "\\":220,
     "space":32,
     "spacebar":32
@@ -266,13 +430,22 @@ var cm_handlers = {
     },
     keydown:function(evt){
         keysOn[evt.keyCode] = true;
-        if (typeof cm_handlers.onkeydown[evt.keyCode] == "function")
+        
+        var kd_key = [];
+        
+        for (var g in keysOn) {
+            if (keysOn[g]) kd_key.push(g);
+        }
+        
+        kd_key = kd_key.join("+");
+        
+        if (typeof cm_handlers.onkeydown[kd_key] == "function")
         {
-            cm_handlers.onkeydown[evt.keyCode](evt);
+            cm_handlers.onkeydown[kd_key](evt);
         }
         else
         {
-            console.log("handler for key not found: ", evt.keyCode);
+            console.log("handler for key not found: ", kd_key);
         }
     },
     keyup:function(evt){
@@ -329,9 +502,22 @@ var cm_handlers = {
                 // Grab xml string
                 var xmlString = (new XMLSerializer()).serializeToString(xml);
                 
+                var fname = prompt("File name:",project.filename);
+                keysOn = [];
+                
+                if (!fname) 
+                {
+                    $.pnotify({
+                        "title":"Requires a file name",
+                        "text":"To save this file out, please provide a filename (with or without .psxml extension) when prompted."
+                    });
+                    return;
+                }
+                
+                
                 // Create dynamic form
                 var form = ich.save_form({
-                    filename:"cm_save_out",
+                    filename:fname,
                     file:escapeHtml(xmlString)
                 });
                 cm_canvas.unsaved_changes = false;
@@ -523,6 +709,18 @@ var cm_handlers = {
                 ];
 
                 cm_canvas.trigger("cm.update");
+            },
+            toggle_semi_circle:function(evt,addl)
+            {
+                var $box = $("#draw_semi");
+                if (!$box.length) return;
+                $box.prop("checked",!$box.prop("checked"));
+            },
+            toggle_rename_pattern:function(evt,addl)
+            {
+                var $box = $("#rename_pattern");
+                if (!$box.length) return;
+                $box.prop("checked",!$box.prop("checked"));
             }
         }
         
@@ -1058,6 +1256,12 @@ var Pattern = function(i, $el)
     });
     
     self.master_i = master_i;
+}
+Pattern.prototype.setName = function(newName)
+{
+    this.name = newName;
+    this.$el.children().filter('st[d]').attr("d",newName);
+    cm_canvas.trigger("cm.change");
 }
 Pattern.prototype.draw = function()
 {
@@ -2088,7 +2292,7 @@ var MarkTool = function(){
             
             // Get the pattern
             pattern = project.patterns[poly1.pattern_index];
-            
+
             // Get dialog
             dialog_html = ich.mark_dialog({
                 pattern_name:pattern.name.substr(0,3),
@@ -2118,8 +2322,7 @@ var MarkTool = function(){
                             distance_from_edge = $("#distance_from_edge").val() *1,
                             text_height = $("#text_height").val() *1,
                             text_rotation,
-                            rename_pattern = $("#rename_pattern").is(":checked");
-
+                            rename_pattern = $("#rename_pattern").prop("checked");
                             
                         try
                         {
@@ -2151,6 +2354,7 @@ var MarkTool = function(){
                             // ------------------------------------
                             //  All validation has passed
                             // ------------------------------------
+                            
                             // @see diagram ./mark_diagram.png
                             // Get GD, width of the corner text box
                             GD = (text_height * 3 / 4) * corner_mark.length;
@@ -2193,32 +2397,35 @@ var MarkTool = function(){
                             // ----------------------------------
                             //  Add semi-circle (arc) around this element
                             // ----------------------------------
-                            arcRadius = distanceBetween(pts1[0],newTextObj.points[3]) + distance_from_edge/2;
-                            if (lineZCobj.correction)
+                            if (draw_semi)
                             {
-                                arcStart = lineZCobj.theta_A; // -this.start
-                                arcStop = lineZCobj.theta_C - arcStart;  // -this.end
-                                if (-arcStart < (-arcStart - arcStop))
+                                arcRadius = distanceBetween(pts1[0],newTextObj.points[3]) + distance_from_edge/2;
+                                if (lineZCobj.correction)
                                 {
-                                    arcStart += Math.PI*2;
-                                    arcStop += Math.PI*2;
+                                    arcStart = lineZCobj.theta_A; // -this.start
+                                    arcStop = lineZCobj.theta_C - arcStart;  // -this.end
+                                    if (-arcStart < (-arcStart - arcStop))
+                                    {
+                                        arcStart += Math.PI*2;
+                                        arcStop += Math.PI*2;
+                                    }
+                                    else
+                                    {
+                                        arcStart -= Math.PI*2;
+                                        arcStop -= Math.PI*2;
+                                    }
                                 }
                                 else
                                 {
-                                    arcStart -= Math.PI*2;
-                                    arcStop -= Math.PI*2;
+                                    arcStart = lineZCobj.theta_A; // -this.start
+                                    arcStop = lineZCobj.theta_C - lineZCobj.theta_A;  // -this.end
                                 }
+
+                                arc = $.parseXML('<arc><e/><v d="'+pts1[0][0]+','+pts1[0][1]+'"/><sa d="'+arcRadius+' '+arcStart+' '+arcStop+'"/></arc>');
+                                $arc = $(arc.documentElement);
+                                pattern.$el.append($arc);
+                                newArcObj = pattern.addArc($arc);
                             }
-                            else
-                            {
-                                arcStart = lineZCobj.theta_A; // -this.start
-                                arcStop = lineZCobj.theta_C - lineZCobj.theta_A;  // -this.end
-                            }
-                            
-                            arc = $.parseXML('<arc><e/><v d="'+pts1[0][0]+','+pts1[0][1]+'"/><sa d="'+arcRadius+' '+arcStart+' '+arcStop+'"/></arc>');
-                            $arc = $(arc.documentElement);
-                            pattern.$el.append($arc);
-                            newArcObj = pattern.addArc($arc);
                             
                             // ----------------------------------
                             //  Side marks
@@ -2347,6 +2554,15 @@ var MarkTool = function(){
                                 }
 
                             }
+                            
+                            // Check if pattern should be renamed
+                            if (rename_pattern) 
+                            {
+                                
+                                pattern.setName(corner_mark);
+                            }
+                            
+                            
                             cm_canvas.trigger("cm.update");
                             // trigger change with undo action
                             cm_canvas.trigger("cm.change",function(){
@@ -2377,6 +2593,8 @@ var MarkTool = function(){
                 },
                 open:function(evt,ui)
                 {
+                    // Clear keysON
+                    keysOn = [];
                     var $this = $(this);
                     cm_handlers.setTool("cursor");
                     cm_canvas.trigger("disable");
@@ -2395,6 +2613,7 @@ var MarkTool = function(){
                 {
                     $(this).dialog("destroy").remove();
                     cm_canvas.trigger("enable");
+                    setCurrentTool("cursor");
                 }
             });
             
@@ -2832,6 +3051,14 @@ CmGui.prototype = {
                 width:"50em",
                 autoOpen: false,
                 buttons:{
+                    Reset: function(){
+                        var c = confirm("Are you sure you want to reset the settings? This will erase any custom settings (shortcuts, options, etc) you have set.");
+                        if (c) {
+                            window.localStorage["cm_settings"] = undefined;
+                            cm_settings = cm_default_settings;
+                            $("#settings_editor",$(this)).val(JSON.stringify(cm_default_settings, null, 4));
+                        }
+                    },
                     Ok: function(){
 
                         try {
@@ -2924,7 +3151,7 @@ CornerMarker = new function()
     {
         // Capture certain window events
         $win.on("keydown keyup mousewheel scroll onscroll",function(evt){
-            if (!cm_canvas.disabled)
+            if (!cm_canvas.disabled || evt.type == "keydown" || evt.type == "keyup")
             {
                 // Send event to current tool
                 currentTool.on(evt);
@@ -2934,7 +3161,7 @@ CornerMarker = new function()
         });
         
         // Capture certain canvas events
-        cm_canvas.on("mousedown mousemove mouseup mouseover cm.deselect cm.file_save cm.file_open cm.fit_screen cm.change cm.delete",function(evt,addl){
+        cm_canvas.on("mousedown mousemove mouseup mouseover cm.deselect cm.file_save cm.file_open cm.fit_screen cm.change cm.delete cm.toggle_semi_circle cm.toggle_rename_pattern",function(evt,addl){
             // Send event to current tool
             currentTool.on(evt,addl);
             // Trigger change event on canvas
@@ -3007,40 +3234,40 @@ CornerMarker = new function()
         cm_handlers.onkeydown = {};
         cm_handlers.onkeyup = {};
         
+        function decodeShortcutKey(key)
+        {
+            var keys = key.split("+");
+            var codes = [];
+            for ( var k in keys ) {
+                codes.push(key_mappings[keys[k]]);
+            }
+            codes.sort(function(a,b){
+                return a < b ? -1 : 1 ;
+            });
+            return codes.join("+");
+        }
+        
         function createShortcut(shortcut,action,cm_handler_key){
             // Look for handler key other than keydown
             if (!cm_handler_key || !cm_handlers[cm_handler_key]) cm_handler_key = "onkeydown";
             
             // Check if multiple keys are bound to this shortcut
-            if (shortcut.code instanceof Array)
+            if (shortcut.key instanceof Array)
             {
-                for (var i=0; i < shortcut.code.length; i++) {
-                    cm_handlers[cm_handler_key][key_mappings[shortcut.code[i]]] = createKeyHandler(shortcut,action);
+                for (var i=0; i < shortcut.key.length; i++) {
+                    cm_handlers[cm_handler_key][decodeShortcutKey(shortcut.key[i])] = createKeyHandler(shortcut,action);
                 }
             }
             // Just one key to be bound
             else
             {
-                cm_handlers[cm_handler_key][key_mappings[shortcut.code]] = createKeyHandler(shortcut,action);
+                cm_handlers[cm_handler_key][decodeShortcutKey(shortcut.key)] = createKeyHandler(shortcut,action);
             }
         }
         
         // the function to create handler functions
         function createKeyHandler(shortcut,action){
             return function(evt){
-                
-                // Check if modkeys are required
-                if (shortcut.modkey instanceof Array)
-                {
-                    for (var m=0; m < shortcut.modkey.length; m++) {
-                        if (!keysOn[shortcut.modkey[m]]) return true ;
-                    }
-                }
-                else if (typeof shortcut.modkey == "number")
-                {
-                    if (!keysOn[shortcut.modkey]) return true ;
-                }
-                
                 action(shortcut.name);
                 if (shortcut.stopEvent) evt.preventDefault();
             }
@@ -3085,7 +3312,9 @@ CornerMarker = new function()
         context = cm_canvas[0].getContext("2d");
         
         // Set project
-        xml = $.parseXML($("#project-data").html());
+        var dataElement = $("#project-data");
+        xml = $.parseXML(dataElement.html());
+        project.filename = dataElement.data("filename");
         
         // Initialize project
         initTools();

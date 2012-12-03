@@ -108,7 +108,7 @@ if ( $file['type'] != 'application/octet-stream' && $file['type'] != 'text/xml' 
 // Move uploaded file to the "files" directory
 if ( move_uploaded_file( $file["tmp_name"], "../files/{$file['name']}" ) )
 {
-	$res['location'] = "/index.php?file=".urlencode($file['name']);
+	$res['location'] = "index.php?file=".urlencode($file['name']);
 }
 else
 {

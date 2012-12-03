@@ -12,7 +12,7 @@ $string = file_get_contents("files/$filename");
     <head>
 		<meta charset="utf-8">
 		<meta name="description" content="This web app can be used to quickly add text markers to corners of patterns in PatternSmith psxml projects.">
-		<title>Corner Marker</title>
+		<title>Corner Marker: <?php echo $filename?></title>
 		<!-- reset styles -->
 		<link rel="stylesheet" href="css/reset.css" type="text/css" media="screen">
 		<!-- include ui theme -->
@@ -80,7 +80,7 @@ $string = file_get_contents("files/$filename");
 						<input type="text" name="entry_mark" id="entry_mark" value="ENT"/>
 					</div><div class="mark-wrapper">
 						<label for="corner_mark">Corner Mark:</label>
-						<input type="text" value="COR" name="corner_mark" id="corner_mark" />
+						<input type="text" value="{{pattern_name}}" name="corner_mark" id="corner_mark" />
 					</div><div class="mark-wrapper">
 						<label for="exit_mark">Exit Mark:</label>
 						<input type="text" name="exit_mark" id="exit_mark" value="EXT" />
@@ -118,11 +118,10 @@ $string = file_get_contents("files/$filename");
 		</script>
 		<script type="text/html" id="save_form">
 
-			<form method="post" action="/actions/file_save.php">
+			<form method="post" action="actions/file_save.php">
 				<label for="filename">file name:</label>
-				<input type="text" value="{{filename}}" />
+				<input type="text" value="{{filename}}" name="filename"/>
 				<input name="file" type="hidden" value="{{{file}}}" />
-				<input name="encode_test" value="&quot;" />
 			</form>
 
 		</script>
@@ -135,7 +134,7 @@ $string = file_get_contents("files/$filename");
 		</script>
 		
 		<!-- the actual psxml document -->
-		<script type="text/xml" id="project-data"><?php echo $string;?></script>
+		<script type="text/xml" id="project-data" data-filename="<?php echo $filename?>"><?php echo $string;?></script>
 		
 		<!-- icanhaz -->
 		<script src="js/vendor/icanhaz.js"></script>
