@@ -1,7 +1,7 @@
 <?php
 
 // Set the filename
-$filename = ( isset($_GET['file']) && file_exists("files/{$_GET['file']}") ) ? $_GET['file'] : "172-000.psxml" ;
+$filename = ( isset($_GET['file']) && file_exists("files/{$_GET['file']}") ) ? $_GET['file'] : "abc.psxml" ;
 
 // Read the file
 $string = file_get_contents("files/$filename");
@@ -36,10 +36,15 @@ $string = file_get_contents("files/$filename");
 				<ul class="cm-menu-dropdown">
 					<li><a href="#" data-action="file_open">Open...</a></li>
 					<li><a href="#" data-action="file_save">Save</a></li>
+					<li><a href="#" data-action="file_save_as">Save As...</a></li>
+					<li><a href="#" data-action="file_open_sample">Open sample file</a></li>
 				</ul>
 			</div>
 			<div class="cm-menu-item" data-menu="settings">
 				<a href="#" class="cm-menu-item-header">settings</a>
+			</div>
+			<div class="cm-menu-item" data-menu="reset_keyboard">
+				<a href="#" class="cm-menu-item-header">reset keyboard</a>
 			</div>
 		</div>
 		<ul class="top-toolbox">

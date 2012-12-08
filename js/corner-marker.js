@@ -27,6 +27,9 @@ var keysOn = [];
 // Object to hold application settings
 var cm_settings = {}
 var cm_default_settings = navigator.appVersion.indexOf("Win")!=-1 
+// ----------------------------------
+//  Defaults for Windows OS
+// ----------------------------------
 ? {
     "general": {
         "max_frame_rate": 50,
@@ -137,7 +140,7 @@ var cm_default_settings = navigator.appVersion.indexOf("Win")!=-1
             "title": "Temporary Corner Marker",
             "name": "mark",
             "type": "tool_t",
-            "key": ["shift","ctrl"]
+            "key": "ctrl"
         },
         {
             "title": "Toggle Draw Semi-Circle option in Marker dialog",
@@ -152,8 +155,8 @@ var cm_default_settings = navigator.appVersion.indexOf("Win")!=-1
             "key": "alt+r"
         },
         {
-            "title": "file > save",
-            "name": "cm.file_save",
+            "title": "file > save as...",
+            "name": "cm.file_save_as",
             "type": "event",
             "key": "alt+s"
         },
@@ -168,16 +171,33 @@ var cm_default_settings = navigator.appVersion.indexOf("Win")!=-1
             "name": "cm.delete",
             "type": "event",
             "key": "delete",
-            "stopEvent": true
+            "stopDefault": true
         },
         {
             "title": "Fit All/Fit Selection",
             "name": "cm.fit_screen",
             "type": "event",
             "key": "f"
+        },
+        {
+            "title": "Prevent Save Dialog",
+            "name": "cm.stop_default_save",
+            "type": "event",
+            "stopDefault":true,
+            "key":"ctrl+s"
+        },
+        {
+            "title": "Prevent Open Dialog",
+            "name": "cm.stop_default_open",
+            "type": "event",
+            "stopDefault":true,
+            "key":"ctrl+o"
         }
     ]
 }
+// ----------------------------------
+//  Defaults for Non-windows
+// ----------------------------------
 : {
     
     "general":{
@@ -289,7 +309,7 @@ var cm_default_settings = navigator.appVersion.indexOf("Win")!=-1
             name: "mark",
             type: "tool_t",
             key: ["cmd","ctrl"],
-            stopEvent: true
+            stopDefault: true
         },
         {
             title: "Toggle Draw Semi-Circle option in Marker dialog",
@@ -304,30 +324,53 @@ var cm_default_settings = navigator.appVersion.indexOf("Win")!=-1
             key: "ctrl+r"
         },
         {
+            title: "file > save as...",
+            name: "cm.file_save_as",
+            type: "event",
+            key: "cmd+s",
+            stopDefault: true
+        },
+        {
             title: "file > save",
             name: "cm.file_save",
             type: "event",
-            key: "ctrl+s"
+            key: "cmd+shift+s",
+            stopDefault: true
         },
         {
             title: "file > open",
             name: "cm.file_open",
             type: "event",
-            key: "ctrl+o"
+            key: "cmd+o",
+            stopDefault: true
         },
         {
             title: "Delete selection",
             name: "cm.delete",
             type: "event",
             key: "delete",
-            stopEvent:true
+            stopDefault:true
         },
         {
             title: "Fit All/Fit Selection",
             name: "cm.fit_screen",
             type: "event",
             key: "f"
-        }
+        }/*,
+        {
+            "title": "Prevent Save Dialog",
+            "name": "cm.stop_default_save",
+            "type": "event",
+            "stopDefault":true,
+            "key":"cmd+s"
+        },
+        {
+            "title": "Prevent Open Dialog",
+            "name": "cm.stop_default_open",
+            "type": "event",
+            "stopDefault":true,
+            "key":"cmd+o"
+        }*/
     ]
 }
 
@@ -502,6 +545,21 @@ var cm_handlers = {
                 // Grab xml string
                 var xmlString = (new XMLSerializer()).serializeToString(xml);
                 
+                var fname = project.filename;
+                
+                // Create dynamic form
+                var form = ich.save_form({
+                    filename:fname,
+                    file:escapeHtml(xmlString)
+                });
+                cm_canvas.unsaved_changes = false;
+                $(form).submit();
+            },
+            file_save_as:function(evt,addl)
+            {
+                // Grab xml string
+                var xmlString = (new XMLSerializer()).serializeToString(xml);
+                
                 var fname = prompt("File name:",project.filename);
                 keysOn = [];
                 
@@ -551,7 +609,7 @@ var cm_handlers = {
                         }
                         else if (res.location)
                         {
-                            window.location = res.location;
+                            window.location.href = res.location;
                         }
                     },
                     error:function(xhr,textStatus,errorThrown)
@@ -565,10 +623,11 @@ var cm_handlers = {
                     {
                         $('#cm-loading-icon').addClass("hide");
                         $input.val("");
+                        keysOn = [];
                     }
                 });
                     
-
+                
                 cm_helpers.open_form = $form;
 
                 // Set the change event
@@ -583,6 +642,15 @@ var cm_handlers = {
                 keysOn = [];
                 // Set tool to cursor
                 cm_handlers.setTool("cursor");
+            },
+            file_open_sample:function(evt,addl)
+            {
+                if (cm_canvas.unsaved_changes)
+                {
+                    var c = confirm("Save current file before opening sample?");
+                    if (c) cm_canvas.trigger("cm.file_save");
+                }
+                window.location.href = "index.php?file=172-000.psxml";
             },
             change:function(evt,addl)
             {
@@ -2304,6 +2372,25 @@ var MarkTool = function(){
                 minWidth:320,
                 resizable:false,
                 modal:true,
+                open:function(evt,ui)
+                {
+                    // Clear keysON
+                    keysOn = [];
+                    var $this = $(this);
+                    cm_handlers.setTool("cursor");
+                    cm_canvas.trigger("disable");
+                    // $(this).find("#entry_mark").focus();
+                    setTimeout(function(){ 
+						$('form #entry_mark').last().focus();
+						$('form #entry_mark').last().focus();
+                        $this.on("keypress",function(evt){
+                            if (evt.which == 13)
+                            {
+                                $this.parent().find('.ui-dialog-buttonpane button:first').trigger("click");
+                            }
+                        })
+					},0);
+                },
                 buttons:{
                     Ok:function()
                     {
@@ -2315,9 +2402,9 @@ var MarkTool = function(){
                             arcRadius, arcStart, arcEnd, arc, $arc, arcObj,
                         
                             // Set input values
-                            entry_mark = $("#entry_mark").val(),
-                            corner_mark = $("#corner_mark").val(),
-                            exit_mark = $("#exit_mark").val(),
+                            entry_mark = $("#entry_mark").val().toUpperCase(),
+                            corner_mark = $("#corner_mark").val().toUpperCase(),
+                            exit_mark = $("#exit_mark").val().toUpperCase(),
                             draw_semi = $("#draw_semi").is(":checked"),
                             distance_from_edge = $("#distance_from_edge").val() *1,
                             text_height = $("#text_height").val() *1,
@@ -2590,24 +2677,6 @@ var MarkTool = function(){
                     {
                         $(this).dialog("close");
                     }
-                },
-                open:function(evt,ui)
-                {
-                    // Clear keysON
-                    keysOn = [];
-                    var $this = $(this);
-                    cm_handlers.setTool("cursor");
-                    cm_canvas.trigger("disable");
-                    // $(this).find("#entry_mark").focus();
-                    setTimeout(function(){ 
-						$('form #entry_mark').last().focus();
-                        $this.on("keypress",function(evt){
-                            if (evt.which == 13)
-                            {
-                                $this.parent().find('.ui-dialog-buttonpane button:first').trigger("click");
-                            }
-                        })
-					},0);
                 },
                 close:function(evt,ui)
                 {
@@ -3040,6 +3109,20 @@ CmGui.prototype = {
         {
             
         },
+        reset_keyboard:function($item, $heading, $dropdown)
+        {
+            $heading.on("click",function(){
+                
+                keysOn = [];
+                CornerMarker.resetShortcuts();
+                
+                $.pnotify({
+                    title: "keyboard reset",
+                    text: "If keyboard shortcuts are still not functioning properly, try going to settings then click reset and OK.",
+                    type: "success"
+                });
+            });
+        },
         settings:function($item, $heading, $dropdown)
         {
             // TODO: Initialize the form to change settings
@@ -3067,6 +3150,7 @@ CmGui.prototype = {
                             cm_settings = new_settings;
                             CornerMarker.resetShortcuts();
                             window.localStorage["cm_settings"] = new_settings_string;
+                            window.localStorage["cm_version"] = CornerMarker.version;
                             $(this).dialog("close");
                         } catch (e) {
                             $.pnotify({
@@ -3113,6 +3197,8 @@ CmGui.prototype = {
 // ----------------------------------
 CornerMarker = new function()
 {
+    // Set version of corner marker
+    this.version = "0.1.1.3";
     // Var to hold wait flag for redraw() function
     var wait = false,
         self = this;
@@ -3161,7 +3247,23 @@ CornerMarker = new function()
         });
         
         // Capture certain canvas events
-        cm_canvas.on("mousedown mousemove mouseup mouseover cm.deselect cm.file_save cm.file_open cm.fit_screen cm.change cm.delete cm.toggle_semi_circle cm.toggle_rename_pattern",function(evt,addl){
+        var evts = [
+            'mousedown',
+            'mousemove',
+            'mouseup',
+            'mouseover',
+            'cm.deselect',
+            'cm.file_save',
+            'cm.file_save_as',
+            'cm.file_open',
+            'cm.file_open_sample',
+            'cm.fit_screen',
+            'cm.change',
+            'cm.delete',
+            'cm.toggle_semi_circle',
+            'cm.toggle_rename_pattern'
+        ];
+        cm_canvas.on(evts.join(" "),function(evt,addl){
             // Send event to current tool
             currentTool.on(evt,addl);
             // Trigger change event on canvas
@@ -3269,7 +3371,7 @@ CornerMarker = new function()
         function createKeyHandler(shortcut,action){
             return function(evt){
                 action(shortcut.name);
-                if (shortcut.stopEvent) evt.preventDefault();
+                if (shortcut.stopDefault) evt.preventDefault();
             }
         }
         
@@ -3328,18 +3430,19 @@ CornerMarker = new function()
 }
 
 
-
-
 // ----------------------------------
+//  Window events!
+// ----------------------------------
+
 //  Start it up!
-// ----------------------------------
 window.onload = function()
 {
     // Check if localStorage is allowed
     if ( supports_html5_storage() )
     {
         try {
-            if ( window.localStorage["cm_settings"] != undefined ) cm_settings = $.parseJSON(window.localStorage["cm_settings"]);
+            if ( window.localStorage["cm_settings"] != undefined && window.localStorage["cm_version"] == CornerMarker.version ) 
+                cm_settings = $.parseJSON(window.localStorage["cm_settings"]);
             else cm_settings = cm_default_settings;
         } catch (e) {
             cm_settings = cm_default_settings;
@@ -3352,12 +3455,13 @@ window.onload = function()
     CornerMarker.run();
 }
 
+//  Clear keys on blur and focus
+$(window).on("focus blur",function(){
+    keysOn = [];
+});
 
 
-
-// ----------------------------------
 //  Hold on!
-// ----------------------------------
 window.onbeforeunload = function(evt){
     if (cm_canvas.unsaved_changes)
     {

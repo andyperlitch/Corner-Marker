@@ -222,6 +222,7 @@ canvas[data-tool="mark"]{
 .mark-dialog fieldset input[type="text"]{
 	width:90%;
 	border-radius:4px;
+	text-transform:uppercase;
 }
 .mark-dialog fieldset .text_height-wrapper,.mark-dialog fieldset .distance_from_edge-wrapper{
 	width:120px;
