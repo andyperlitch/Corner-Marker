@@ -60,6 +60,9 @@ $string = file_get_contents("files/$filename");
 			<li>
 				<button title="mark: mark a corner with up to three symbols" class="cm-tool mark-tool" data-tool="mark">mark</button>
 			</li>
+			<li>
+				<button title="label: add a label that does not get exported from Corner Marker" class="cm-tool label-tool" data-tool="label">label</button>
+			</li>
 		</ul>
 		<form id="cm-settings-frm" title="Settings">
 			
@@ -73,23 +76,41 @@ $string = file_get_contents("files/$filename");
 		
 		<div id="canvas-disabler"></div>
 		<!-- templates -->
+		<script type="text/html" id="label_dialog">
+			<form class="label-dialog mark-dialog" title="Add Temporary Label">
+				<fieldset>
+					<div class="mark-wrapper">
+						<label for="label_text">label text</label>
+						<input type="text" name="label_text" id="label_text" />
+					</div>
+					<div class="mark-wrapper">
+						<label for="label_height">label height</label>
+						<input type="text" name="label_height" id="label_height" value="{{default_label_height}}" />
+					</div>
+					<div class="mark-wrapper">
+						<label for="label_rotation">label rotation</label>
+						<input type="text" id="label_rotation" name="label_rotation" value="0" />
+					</div>
+				</fieldset>
+			</form>
+		</script>
 		<script type="text/html" id="mark_dialog">
 		
 			<form class="mark-dialog" title="Add Marks to this corner">
 				
 				<fieldset>
-					<legend>Basic Marking Options</legend>
-					
 					<div class="mark-wrapper">
 						<label for="entry_mark">Entry Mark:</label>
-						<input type="text" name="entry_mark" id="entry_mark" value="ENT"/>
+						<input type="text" name="entry_mark" id="entry_mark" value=""/>
 					</div><div class="mark-wrapper">
 						<label for="corner_mark">Corner Mark:</label>
 						<input type="text" value="{{pattern_name}}" name="corner_mark" id="corner_mark" />
 					</div><div class="mark-wrapper">
 						<label for="exit_mark">Exit Mark:</label>
-						<input type="text" name="exit_mark" id="exit_mark" value="EXT" />
-					</div><div class="input-wrapper">
+						<input type="text" name="exit_mark" id="exit_mark" value="" />
+					</div><div class="input-wrapper swap-wrapper">
+						<button type="button" class="swap-entry-exit">swap</button>
+					</div><div class="input-wrapper draw-semi-wrapper">
 						<label for="draw_semi">Draw Semi-Circle:</label>
 						<input type="checkbox" name="draw_semi" id="draw_semi" checked="checked" />
 					</div>
@@ -97,9 +118,9 @@ $string = file_get_contents("files/$filename");
 				</fieldset>
 				
 				<fieldset>
-					<legend>Additional Options</legend>
+					<legend><a href="#" class="toggle-addl-options">more options</a></legend>
 					
-					<div class="additional-options">
+					<div class="additional-options hide">
 						<div class="distance_from_edge-wrapper">
 							<label for="distance_from_edge">Minimum Distance from Edge:</label>
 							<input type="text" name="distance_from_edge" id="distance_from_edge" value="{{distance_from_edge}}" />

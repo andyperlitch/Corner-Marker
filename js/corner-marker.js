@@ -26,24 +26,23 @@ var keysOn = [];
 
 // Object to hold application settings
 var cm_settings = {}
-var cm_default_settings = navigator.appVersion.indexOf("Win")!=-1 
+var cm_default_settings =  
 // ----------------------------------
 //  Defaults for Windows OS
 // ----------------------------------
-? {
+{
     "general": {
         "max_frame_rate": 50,
-        "move_sensitivity": 0.5
+        "move_sensitivity": 0.5,
+        "save_text_for_old_ps": false
     },
     "canvas": {
         "background_color": "#000000",
         "point_color": "#DDD",
         "point_diameter": 4,
-        "padding": [
-            50,
-            50
-        ],
-        "marquee_color": "#CCC"
+        "padding": [50,50],
+        "marquee_color": "#CCC",
+        "fit_to_screen_padding":0.05
     },
     "tools": {
         "zoom": {
@@ -55,12 +54,19 @@ var cm_default_settings = navigator.appVersion.indexOf("Win")!=-1
             "click_radius": 6,
             "min_marquee_area": 16
         },
-        "mark": {
-            "min_corner_angle": 30,
-            "default_label_height": 0.375,
-            "default_edge_distance": 0.125,
-            "same_point_tolerance": 0.02,
-            "max_mark_chars": 3
+        "mark":{
+            "min_corner_angle":30,
+            "default_label_height":0.3,
+            "default_edge_distance":0.05,
+            "same_point_tolerance":0.02,
+            "max_mark_chars":3,
+            "dialog_placement":[70,70],
+            "make_mark_key":"c"
+        },
+        "label":{
+            "default_label_height": 5,
+            "plottype":"ref2",
+            "dialog_placement":[100, 100]
         }
     },
     "plottypes": {
@@ -81,6 +87,13 @@ var cm_default_settings = navigator.appVersion.indexOf("Win")!=-1
             "display_name": "Reference",
             "inactive": "#CCCC00",
             "active": "#FFFF00",
+            "enable": false,
+            "display": true
+        },
+        "ref2": {
+            "display_name": "Reference 2",
+            "inactive": "#cc5900",
+            "active":"#ff6f00",
             "enable": true,
             "display": true
         },
@@ -137,10 +150,10 @@ var cm_default_settings = navigator.appVersion.indexOf("Win")!=-1
             "key": "c"
         },
         {
-            "title": "Temporary Corner Marker",
-            "name": "mark",
-            "type": "tool_t",
-            "key": "ctrl"
+            "title": "Set to label tool",
+            "name": "label",
+            "type": "tool",
+            "key": "t"
         },
         {
             "title": "Toggle Draw Semi-Circle option in Marker dialog",
@@ -153,6 +166,12 @@ var cm_default_settings = navigator.appVersion.indexOf("Win")!=-1
             "name": "cm.toggle_rename_pattern",
             "type": "event",
             "key": "alt+r"
+        },
+        {
+            "title": "Trigger click on swap entry exit marks",
+            "name": "cm.swap_exit_entry",
+            "type": "event",
+            "key": "shift+alt"
         },
         {
             "title": "file > save as...",
@@ -192,170 +211,117 @@ var cm_default_settings = navigator.appVersion.indexOf("Win")!=-1
             "type": "event",
             "stopDefault":true,
             "key":"ctrl+o"
+        },
+        {
+            "title": "Undo",
+            "name": "cm.undo",
+            "type": "event",
+            "stopDefault": true,
+            "key":"ctrl+z"
         }
     ]
 }
+
+
+
 // ----------------------------------
 //  Defaults for Non-windows
 // ----------------------------------
-: {
-    
-    "general":{
-        "max_frame_rate":50,
-        "move_sensitivity":0.5
-    },
-    "canvas":{
-        
-        "background_color":"#000000",
-        "point_color":"#DDD",
-        "point_diameter":4,
-        "padding":[50,50],
-        "marquee_color":"#CCC"
-        
-    },
-    "tools":{
-        "zoom":{
-            "zoom_amt":0.2,
-            "mousewheel_amt":0.5
-        },
-        "cursor":{
-            "max_items_with_points":400,
-            "click_radius":6,
-            "min_marquee_area":16
-        },
-        "mark":{
-            "min_corner_angle":30,
-            "default_label_height":0.375,
-            "default_edge_distance":0.125,
-            "same_point_tolerance":0.02,
-            "max_mark_chars":3
-        }
-    },
-    "plottypes":{
-        "default":{
-            display_name:"Default",
-            inactive:"#",
-            enable:false,
-            display:true
-        },
-        "plot":{
-            display_name:"Plot",
-            inactive:"#00CC00",
-            active:"#00FF00",
-            enable:true,
-            display:true
-        },
-        "ref":{
-            display_name:"Reference",
-            inactive:"#CCCC00",
-            active:"#FFFF00",
-            enable:false,
-            display:true
-        },
-        "cut":{
-            display_name:"Cut",
-            inactive:"#CC0000",
-            active:"#FF0000",
-            enable:true,
-            display:true
-        },
-        "cut2":{
-            display_name:"Cut 2",
-            inactive:"#8800FF",
-            actived:"#CC00FF",
-            enable:true,
-            display:true
-        }
-    },
-    "shortcuts":[
+if (navigator.appVersion.indexOf("Win") == -1) {
+    cm_default_settings["shortcuts"] = [
         {
-            title: "Set to Hand",
-            name: "hand",
-            type: "tool",
-            key: "h"
+            "title": "Set to Hand",
+            "name": "hand",
+            "type": "tool",
+            "key": "h"
         },
         {
-            title: "Temporary Hand Tool",
-            name: "hand",
-            type: "tool_t",
-            key: "space"
+            "title": "Temporary Hand Tool",
+            "name": "hand",
+            "type": "tool_t",
+            "key": "space"
         },
         {
-            title: "Set to Cursor",
-            name: "cursor",
-            type: "tool",
-            key: "v"
+            "title": "Set to Cursor",
+            "name": "cursor",
+            "type": "tool",
+            "key": "v"
         },
         {
-            title: "Set to Zoom",
-            name: "zoom",
-            type: "tool",
-            key: "z"
+            "title": "Set to Zoom",
+            "name": "zoom",
+            "type": "tool",
+            "key": "z"
         },
         {
-            title: "Temporary Zoom Tool",
-            name: "zoom",
-            type: "tool_t",
-            key: "alt"
+            "title": "Temporary Zoom Tool",
+            "name": "zoom",
+            "type": "tool_t",
+            "key": "alt"
         },
         {
-            title: "Set to Corner Marker",
-            name: "mark",
-            type: "tool",
-            key: "c"
+            "title": "Set to Corner Marker",
+            "name": "mark",
+            "type": "tool",
+            "key": "c"
         },
         {
-            title: "Temporary Corner Marker",
-            name: "mark",
-            type: "tool_t",
-            key: ["cmd","ctrl"],
-            stopDefault: true
+            "title": "Set to label tool",
+            "name": "label",
+            "type": "tool",
+            "key": "t"
         },
         {
-            title: "Toggle Draw Semi-Circle option in Marker dialog",
-            name: "cm.toggle_semi_circle",
-            type: "event",
-            key: "ctrl+c"
+            "title": "Toggle Draw Semi-Circle option in Marker dialog",
+            "name": "cm.toggle_semi_circle",
+            "type": "event",
+            "key": "ctrl+c"
         },
         {
-            title: "Toggle Rename Pattern option in Marker dialog",
-            name: "cm.toggle_rename_pattern",
-            type: "event",
-            key: "ctrl+r"
+            "title": "Toggle Rename Pattern option in Marker dialog",
+            "name": "cm.toggle_rename_pattern",
+            "type": "event",
+            "key": "ctrl+r"
         },
         {
-            title: "file > save as...",
-            name: "cm.file_save_as",
-            type: "event",
-            key: "cmd+s",
-            stopDefault: true
+            "title": "Trigger click on swap entry exit marks",
+            "name": "cm.swap_exit_entry",
+            "type": "event",
+            "key": "option+shift"
         },
         {
-            title: "file > save",
-            name: "cm.file_save",
-            type: "event",
-            key: "cmd+shift+s",
-            stopDefault: true
+            "title": "file > save as...",
+            "name": "cm.file_save_as",
+            "type": "event",
+            "key": "cmd+s",
+            "stopDefault": true
         },
         {
-            title: "file > open",
-            name: "cm.file_open",
-            type: "event",
-            key: "cmd+o",
-            stopDefault: true
+            "title": "file > save",
+            "name": "cm.file_save",
+            "type": "event",
+            "key": "cmd+shift+s",
+            "stopDefault": true
         },
         {
-            title: "Delete selection",
-            name: "cm.delete",
-            type: "event",
-            key: "delete",
-            stopDefault:true
+            "title": "file > open",
+            "name": "cm.file_open",
+            "type": "event",
+            "key": "cmd+o",
+            "stopDefault": true
         },
         {
-            title: "Fit All/Fit Selection",
-            name: "cm.fit_screen",
-            type: "event",
-            key: "f"
+            "title": "Delete selection",
+            "name": "cm.delete",
+            "type": "event",
+            "key": "delete",
+            "stopDefault":true
+        },
+        {
+            "title": "Fit All/Fit Selection",
+            "name": "cm.fit_screen",
+            "type": "event",
+            "key": "f"
         }/*,
         {
             "title": "Prevent Save Dialog",
@@ -371,8 +337,18 @@ var cm_default_settings = navigator.appVersion.indexOf("Win")!=-1
             "stopDefault":true,
             "key":"cmd+o"
         }*/
-    ]
+        ,
+        {
+            "title": "Undo",
+            "name": "cm.undo",
+            "type": "event",
+            "stopDefault": true,
+            "key":"cmd+z"
+        }
+    ];
 }
+
+
 
 var key_mappings = {
     "0":48,
@@ -438,7 +414,7 @@ var key_mappings = {
 }
 
 // Holds the history of actions: to be used with undo cmds
-var cm_history = {};
+var cm_history = [];
 
 // Holds the man <canvas> DOM element
 var cm_canvas;
@@ -463,7 +439,7 @@ var cm_handlers = {
     
     setTool:function(tool)
     {
-        if (currentTool.name == tool) return;
+        if (currentTool.name == tool || cm_canvas.disabled) return;
         cm_handlers.lastTool = currentTool.getName();
         setCurrentTool(tool);
     },
@@ -652,10 +628,37 @@ var cm_handlers = {
                 }
                 window.location.href = "index.php?file=172-000.psxml";
             },
-            change:function(evt,addl)
+            change:function(evt,undoObject)
             {
-                // console.log(addl);
+                // Set canvas unsaved_changes
                 cm_canvas.unsaved_changes = true;
+                
+                // Add undo function to history
+                cm_history.push(undoObject);
+            },
+            undo:function(evt,addl)
+            {
+                if (cm_history.length == 0) {
+                    $.pnotify({
+                        title: "Nothing to undo!",
+                        text: "The undo history is empty."
+                    });
+                    return;
+                }
+                // get undo object
+                var undoObject = cm_history.pop();
+                // Check for fn and args
+                if ( typeof undoObject.fn !== "function" || typeof undoObject.args !== "object" ) return;
+                // Execute function
+                undoObject.fn(undoObject.args);
+                // check if notify_message is set in args
+                if (undoObject.args.notify_message){
+                    $.pnotify({
+                        title:"Undo",
+                        text:undoObject.args.notify_message,
+                        type:"success"
+                    });
+                }
             },
             delete:function(evt,addl)
             {
@@ -725,11 +728,21 @@ var cm_handlers = {
                     // check max y
                     if (max[1] == undefined || coords[1] > max[1]) max[1] = coords[1];
                 }
-
+                
                 // Get the x & y ranges of visibility
                 var xRange = max[0] - min[0];
                 var yRange = max[1] - min[1];
-
+                
+                // Add padding to min and max
+                max[0] += Math.ceil(xRange*cm_settings.canvas.fit_to_screen_padding);
+                min[0] -= Math.ceil(xRange*cm_settings.canvas.fit_to_screen_padding);
+                max[1] += Math.ceil(yRange*cm_settings.canvas.fit_to_screen_padding);
+                min[1] -= Math.ceil(yRange*cm_settings.canvas.fit_to_screen_padding);
+                
+                // Reset ranges with padding
+                xRange = max[0] - min[0];
+                yRange = max[1] - min[1];
+                
                 // Get prospective x&y pixels per unit ratios
                 var xRatio = cm_canvas.width() / xRange;
                 var yRatio = cm_canvas.height() / yRange;
@@ -789,6 +802,12 @@ var cm_handlers = {
                 var $box = $("#rename_pattern");
                 if (!$box.length) return;
                 $box.prop("checked",!$box.prop("checked"));
+            },
+            swap_exit_entry:function(evt,addl)
+            {
+                var $btn = $("button.swap-entry-exit");
+                if (!$btn.length) return;
+                $btn.trigger("click");
             }
         }
         
@@ -1327,9 +1346,25 @@ var Pattern = function(i, $el)
 }
 Pattern.prototype.setName = function(newName)
 {
+    var self = this;
+    var oldName = this.name;
+    var $st = this.$el.children().filter('st[d]');
     this.name = newName;
-    this.$el.children().filter('st[d]').attr("d",newName);
-    cm_canvas.trigger("cm.change");
+    $st.attr("d",newName);
+    cm_canvas.trigger("cm.change",{
+        fn:function(args){
+            // reset name
+            args.pattern.name = args.oldName;
+            // reset $st[d]
+            args.$st.attr("d",oldName);
+        },
+        args: {
+            "oldName":oldName,
+            "pattern":self,
+            "$st":$st,
+            "notify_message":"Pattern '"+newName+"' renamed back to '"+oldName+"'"
+        }
+    });
 }
 Pattern.prototype.draw = function()
 {
@@ -2292,6 +2327,7 @@ var CursorTool = function()
 }
 CursorTool.prototype = new Tool();
 
+// Mark tool
 var MarkTool = function(){
     
     var self = this;
@@ -2299,11 +2335,104 @@ var MarkTool = function(){
     // Set name of tool
     this.name = "mark";
     
-    
-    // Handlers
+    // mousedown
     this.handlers["mousedown"] = function(evt)
     {
-        var poly1, poly2, pts1, pts2, shares_a_point = false, pattern, dialog_html, entryIs;
+        // Stop weird drag cursor issue in chrome
+        evt.originalEvent.preventDefault();
+        
+        
+        
+        // Set current mouse pos in a local var
+        var mouse = [evt.offsetX, evt.offsetY];
+        
+        cm_helpers["cursor-marquee"] = new Marquee(mouse,mouse);
+    },
+    
+    // mousemove
+    this.handlers["mousemove"] = function(evt)
+    {
+        if ( cm_helpers["cursor-marquee"] instanceof Marquee ) {
+            var mouse = [evt.offsetX, evt.offsetY];
+            cm_helpers["cursor-marquee"].setEndCorner(mouse);
+        }
+        
+    }
+    
+    // mouseup
+    this.handlers["mouseup"] = function(evt)
+    {
+        // Is the marquee there?
+        if (!cm_helpers["cursor-marquee"]) return;
+        
+        // If shift is not down, deselect
+        if (!keysOn[16]) cm_canvas.trigger("cm.deselect");
+        
+        // Set variable to hold timeout time to catch an update
+        var time_to_update = 1000/cm_settings.general.max_frame_rate;
+        
+        // Set marquee to hidden
+        cm_helpers["cursor-marquee"].hide = true;
+        
+        // Get area of marquee
+        var marquee_area = cm_helpers["cursor-marquee"].getArea();
+        
+        // Check if area is big enough
+        if (marquee_area <= cm_settings.tools.cursor.min_marquee_area)
+        {
+            // Make a little bigger
+            var center = cm_helpers["cursor-marquee"].getMinCorner();
+            cm_helpers["cursor-marquee"]
+                .setStartCorner([center[0] - cm_settings.tools.cursor.click_radius, center[1] - cm_settings.tools.cursor.click_radius])
+                .setEndCorner([center[0] + cm_settings.tools.cursor.click_radius, center[1] + cm_settings.tools.cursor.click_radius]);
+        }
+        
+        // Set cursor_point variable to true if there is anything in the marquee
+        if (cm_helpers["cursor-marquee"].hasEmptyPixels())
+        {
+            // Deselect all
+            if (!keysOn[16]) cm_canvas.trigger("cm.deselect");
+            delete cm_helpers["cursor-marquee"];
+        }
+        else
+        {
+            // Look for new select
+            cm_cursor_point = true;
+        }
+
+
+
+        // Update canvas after next refresh
+        cm_canvas.trigger("cm.update");
+        cm_cursor_point = false;
+        delete cm_helpers["cursor-marquee"];
+        if (cm_selected_length == 2) self.openMarkDialog();
+    }
+    
+    // Handlers
+    this.handlers["keydown"] = function(evt)
+    {
+        if (
+            evt.keyCode != key_mappings[cm_settings.tools.mark.make_mark_key]
+            ||
+            cm_canvas.disabled
+            ||
+            $("#add_corner_mark_dialog").length
+        ) return true;
+        evt.preventDefault();
+        
+        return self.openMarkDialog();
+        
+    }
+    
+    this.openMarkDialog = function(endpoint)
+    {
+        var poly1, poly2, pts1, pts2, shares_a_point = false, pattern, dialog_html, entryIs, add_corner_mark_dialog = $("#add_corner_mark_dialog");
+        
+        if (add_corner_mark_dialog.length) {
+            $.pnotify("Please close the current marker dialog.");
+            return;
+        }
         
         try {
             // Check that two things are selected
@@ -2328,6 +2457,9 @@ var MarkTool = function(){
             // Check that they are in the same pattern
             if (poly1.pattern_index !== poly2.pattern_index) throw "The polylines you have selected are not in the same pattern";
             
+            // Get the pattern
+            pattern = project.patterns[poly1.pattern_index];
+            
             // Check for same start points
             if ( isSamePoint(pts1[0], pts2[0]) ) 
             {
@@ -2346,10 +2478,24 @@ var MarkTool = function(){
                 pts2.reverse();
                 // poly2 is the entry segment
                 entryIs = "2";
+                // Check if other endpoints also meet
+                if ( isSamePoint(pts1[pts1.length -1], pts2[pts2.length -1]) ) {
+                    // Check if an end point has been specified
+                    if (endpoint !== undefined){
+                        // If selected point is not pts1, unreverse points and 
+                        // set shares_a_point to false so the next check will pass
+                        if (!isSamePoint(endpoint, pts1[0])) {
+                            pts2.reverse();
+                            shares_a_point = false;
+                        }
+                    } else {
+                        return self.chooseEndPoint(pts1[0], pts1[pts1.length -1],pattern.center);
+                    }
+                    
+                };
             }
-            if ( isSamePoint(pts1[pts1.length -1], pts2[0]) )
+            if ( isSamePoint(pts1[pts1.length -1], pts2[0]) && shares_a_point == false )
             {
-                if (shares_a_point) throw "These polylines share more than one end point.";
                 shares_a_point = true;
                 pts1.reverse();
                 // poly1 is the entry segment
@@ -2357,10 +2503,6 @@ var MarkTool = function(){
             }
             if (!shares_a_point) throw "These polylines do not share an end point.";
             
-            
-            // Get the pattern
-            pattern = project.patterns[poly1.pattern_index];
-
             // Get dialog
             dialog_html = ich.mark_dialog({
                 pattern_name:pattern.name.substr(0,3),
@@ -2369,20 +2511,39 @@ var MarkTool = function(){
             });
             
             var $dialog = $(dialog_html).dialog({
-                minWidth:320,
-                resizable:false,
-                modal:true,
+                position:cm_settings.tools.mark.dialog_placement,
+                width:250,
+                resizable:true,
+                modal:false,
+                dragStop:function(event,ui){
+                    cm_settings.tools.mark.dialog_placement = [
+                        ui.position.left,
+                        ui.position.top
+                    ];
+                    var new_setting_string = JSON.stringify(cm_settings);
+                    window.localStorage["cm_settings"] = new_setting_string;
+                    // put focus on text box again
+                    $('form #entry_mark').last().focus();
+                },
                 open:function(evt,ui)
                 {
                     // Clear keysON
                     keysOn = [];
-                    var $this = $(this);
-                    cm_handlers.setTool("cursor");
-                    cm_canvas.trigger("disable");
-                    // $(this).find("#entry_mark").focus();
+                    
+                    // Cache dialog
+                    var $this = $(this).attr("id","add_corner_mark_dialog");
+                    
+                    // Disable the canvas
+                    // cm_canvas.trigger("disable");
+                    
+                    // set toggle link options
+                    $(".toggle-addl-options",$this).on("click",function(evt){
+                        $("div.additional-options",$this).toggle();
+                    });
+                    
                     setTimeout(function(){ 
-						$('form #entry_mark').last().focus();
-						$('form #entry_mark').last().focus();
+						$('#entry_mark',$this).last().focus();
+						$('#entry_mark',$this).last().focus();
                         $this.on("keypress",function(evt){
                             if (evt.which == 13)
                             {
@@ -2390,288 +2551,25 @@ var MarkTool = function(){
                             }
                         })
 					},0);
+					
+					// Set up listeners to generate preview
+					$("input",$this).on("keyup change",function(evt){
+					    self.removePreviewMarks();
+					    self.addMark($this,pts1,pts2,pattern,entryIs,true);
+					});
+					
+					// Set up swap button functionality
+					$("button.swap-entry-exit",$this).on("click",function(evt){
+					    var init_entry_txt = $('#entry_mark',$this).val();
+					    var init_exit_txt = $('#exit_mark',$this).val();
+					    $('#entry_mark',$this).val(init_exit_txt);
+					    $('#exit_mark',$this).val(init_entry_txt).trigger("change");
+					});
                 },
                 buttons:{
                     Ok:function()
                     {
-                        // Create object containing corner mark info
-                        var 
-                            markObj = {}, GD, theta, mu, GY, 
-                            XY, ZC, lineZC, vector, center_of_text,
-                            bisector_cos, newText, $newText, newTextObj,
-                            arcRadius, arcStart, arcEnd, arc, $arc, arcObj,
-                        
-                            // Set input values
-                            entry_mark = $("#entry_mark").val().toUpperCase(),
-                            corner_mark = $("#corner_mark").val().toUpperCase(),
-                            exit_mark = $("#exit_mark").val().toUpperCase(),
-                            draw_semi = $("#draw_semi").is(":checked"),
-                            distance_from_edge = $("#distance_from_edge").val() *1,
-                            text_height = $("#text_height").val() *1,
-                            text_rotation,
-                            rename_pattern = $("#rename_pattern").prop("checked");
-                            
-                        try
-                        {
-                            // ------------------------------------
-                            //  Validation:
-                            // ------------------------------------
-                            
-                            // Check length of chars
-                            if (
-                                entry_mark.length > cm_settings.tools.mark.max_mark_chars ||
-                                corner_mark.length > cm_settings.tools.mark.max_mark_chars ||
-                                exit_mark.length > cm_settings.tools.mark.max_mark_chars
-                            ) 
-                                throw "Marks can contain "+cm_settings.tools.mark.max_mark_chars+" characters maximum";
-
-                            // Check distance from edge and text height
-                            if (distance_from_edge < cm_settings.tools.mark.min_edge_distance) throw "Distance from edge must be greater than "+cm_settings.tools.mark.min_edge_distance+".";
-                            if (distance_from_edge > cm_settings.tools.mark.max_edge_distance) throw "Distance from edge must be less than "+cm_settings.tools.mark.max_edge_distance+".";
-
-                            // Check if text height ok
-                            if (text_height < cm_settings.tools.mark.min_label_height) throw "Label height must be greater than "+cm_settings.tools.mark.min_label_height+".";
-                            if (text_height > cm_settings.tools.mark.max_label_height) throw "Label height must be less than "+cm_settings.tools.mark.max_label_height+".";
-
-                            // If renaming the pattern, check that something is actually there
-                            if (corner_mark.length <= 0) throw "There must always be a value for the Corner Mark label.";
-
-
-
-                            // ------------------------------------
-                            //  All validation has passed
-                            // ------------------------------------
-                            
-                            // @see diagram ./mark_diagram.png
-                            // Get GD, width of the corner text box
-                            GD = (text_height * 3 / 4) * corner_mark.length;
-                            // calculate Ø, angle of AZB
-                            theta = getRadiansBetweenPts(pts1[1],pts2[1],pts1[0]);
-                            // console.log("angle between sides: "+(theta/Math.PI)*180);
-                            // get µ, angle of triangle GYV (or DXW)
-                            mu = (Math.PI - theta)/2;
-                            // console.log("angle at one corner: "+(180*mu/Math.PI));
-                            // Get length of GY (or DX)
-                            GY = distance_from_edge/Math.sin(mu);
-                            // Get the length of XY
-                            XY = GD + 2*GY;
-                            // Get length of ZC
-                            ZC = (XY/2) * Math.tan(mu);
-                            // Get the equation for line ZC
-                            lineZCobj = getAngleBisector(pts1[1],pts2[1],pts1[0],true);
-                            lineZC = lineZCobj.line;
-                            
-                            // Mark bisecting line:
-                            // for (i = pts1[0][0] - 10; i < (pts1[0][0] + 10); i++) markPoint( addPoints ( rotatePt([i,lineZC(i)],pattern.rotation),pattern.center), true);
-                            
-                            // Get the cosine for the angle bisector
-                            bisector_cos = Math.cos(lineZCobj.phi);
-                            vector = [ pts1[0][0] + ZC * (bisector_cos/Math.abs(bisector_cos)) ];
-                            vector.push(lineZC(vector[0]));
-                            
-                            // Get center of new text object
-                            center_of_text = addPoints( pts1[0], multiplyPoint( normalizeVector( subtractPoint(vector,pts1[0]) ), ZC ) );
-                            text_rotation = lineZCobj.phi - Math.PI/2;
-                            
-                            // ----------------------------------
-                            //  Add center text element
-                            // ----------------------------------
-                            newText = $.parseXML('<text><e/><st d="'+corner_mark+'"/><v d="'+center_of_text[0]+','+center_of_text[1]+'"/><sa d="'+text_height+' '+text_rotation+'"/></text>');
-                            $newText = $(newText.documentElement);
-                            pattern.$el.append($newText);
-                            newTextObj = pattern.addTextlabel($newText);
-                            
-                            // ----------------------------------
-                            //  Add semi-circle (arc) around this element
-                            // ----------------------------------
-                            if (draw_semi)
-                            {
-                                arcRadius = distanceBetween(pts1[0],newTextObj.points[3]) + distance_from_edge/2;
-                                if (lineZCobj.correction)
-                                {
-                                    arcStart = lineZCobj.theta_A; // -this.start
-                                    arcStop = lineZCobj.theta_C - arcStart;  // -this.end
-                                    if (-arcStart < (-arcStart - arcStop))
-                                    {
-                                        arcStart += Math.PI*2;
-                                        arcStop += Math.PI*2;
-                                    }
-                                    else
-                                    {
-                                        arcStart -= Math.PI*2;
-                                        arcStop -= Math.PI*2;
-                                    }
-                                }
-                                else
-                                {
-                                    arcStart = lineZCobj.theta_A; // -this.start
-                                    arcStop = lineZCobj.theta_C - lineZCobj.theta_A;  // -this.end
-                                }
-
-                                arc = $.parseXML('<arc><e/><v d="'+pts1[0][0]+','+pts1[0][1]+'"/><sa d="'+arcRadius+' '+arcStart+' '+arcStop+'"/></arc>');
-                                $arc = $(arc.documentElement);
-                                pattern.$el.append($arc);
-                                newArcObj = pattern.addArc($arc);
-                            }
-                            
-                            // ----------------------------------
-                            //  Side marks
-                            // ----------------------------------
-                            if (entry_mark.length || exit_mark.length)
-                            {
-                                // Init vars
-                                var ZS = distanceBetween(pts1[0],newTextObj.points[3]) + distance_from_edge;
-                                
-
-                                // ------------------------------------
-                                //  entry_mark
-                                // ------------------------------------
-                                var enMarkWidth = (text_height * 3 / 4) * entry_mark.length;
-                                var ZS_entry = ZS + enMarkWidth/2;
-                                var entryLinePoints = entryIs == "1" ? pts1 : pts2 ;
-                                // Get point on entry line ZS_entry away from corner
-                                // get the line:
-                                var entryLine = getLineEquation(entryLinePoints[0],entryLinePoints[1]);
-                                // get point far away from desired point
-                                
-                                var entryVectorPoint = entryLinePoints[0][0] < entryLinePoints[1][0] 
-                                    ? [ entryLinePoints[0][0]+1000, entryLine(entryLinePoints[0][0]+1000) ]
-                                    : [ entryLinePoints[0][0]-1000, entryLine(entryLinePoints[0][0]-1000) ]
-                                ;
-                                // 
-                                var entryLinePoint = addPoints( entryLinePoints[0], multiplyPoint( normalizeVector( subtractPoint(entryVectorPoint,entryLinePoints[0]) ), ZS_entry ) );
-                                var entryLineSlope = ( entryLine(1) - entryLine(0) ) == 0 ? Infinity : -1 / ( entryLine(1) - entryLine(0) );
-                                // console.log(entryLineSlope);
-                                
-                                // add line to helpers
-                                var entryPerpLine = new Line( getLineEquation(entryLinePoint,false,entryLineSlope) );
-                                // cm_helpers.lines["mark_entry_perp_line"] = entryPerpLine;
-
-
-                                // ------------------------------------
-                                //  exit_mark
-                                // ------------------------------------
-                                var exMarkWidth = (text_height * 3 / 4) * exit_mark.length;
-                                var ZS_exit = ZS + exMarkWidth/2;
-                                var exitLinePoints = entryIs == "1" ? pts2 : pts1 ;
-                                var exitLine = getLineEquation(exitLinePoints[0],exitLinePoints[1]);
-                                var exitVectorPoint = exitLinePoints[0][0] < exitLinePoints[1][0]
-                                    ? [ exitLinePoints[0][0]+1000, exitLine(exitLinePoints[0][0]+1000) ]
-                                    : [ exitLinePoints[0][0]-1000, exitLine(exitLinePoints[0][0]-1000) ]
-                                ;
-                                var exitLinePoint = addPoints (exitLinePoints[0], multiplyPoint( normalizeVector( subtractPoint(exitVectorPoint,exitLinePoints[0]) ), ZS_exit ) );
-                                var exitLineSlope = (exitLine(1) - exitLine(0)) == 0 ? Infinity : -1 / (exitLine(1) - exitLine(0));
-
-                                // add to helpers
-                                var exitPerpLine = new Line( getLineEquation(exitLinePoint,false,exitLineSlope) );
-                                // cm_helpers.lines["mark_exit_perp_line"] = exitPerpLine;
-
-                                // Get intersection of the two perp lines
-                                var intersectPoint = entryPerpLine.getIntersectPoint(exitPerpLine);
-
-                                if (entry_mark.length)
-                                {
-                                    // Get center for entry text element
-                                    var entry_mark_center = addPoints( entryLinePoint, multiplyPoint( normalizeVector( subtractPoint(intersectPoint,entryLinePoint) ), distance_from_edge ) );
-                                    // cm_helpers.points["entry_mark_center"] = new Point(addPoints(entry_mark_center,pattern.center));
-                                    // cm_helpers.points["entry_mark_line_pt"] = new Point(addPoints(entryLinePoint,pattern.center),"circle");
-
-                                    // Add text object
-                                    var entryTextRotation = entryIs == "1" ? lineZCobj.theta_A : lineZCobj.theta_C ;
-                                    entryTextRotation %= 2*Math.PI;
-                                    entryTextRotation += Math.PI;
-
-                                    var newEntryText = $.parseXML('<text><e/><st d="'+entry_mark+'"/><v d="'+entry_mark_center[0]+','+entry_mark_center[1]+'"/><sa d="'+text_height+' '+entryTextRotation+'"/></text>'),
-                                    $newEntryText = $(newEntryText.documentElement);
-                                    pattern.$el.append($newEntryText);
-                                    var newEntryTextObj = pattern.addTextlabel($newEntryText);
-
-                                    // Double check if vertical and correctly positioned
-                                    var entryTextOppCtr = averagePoints(newEntryTextObj.points[3], newEntryTextObj.points[4]);
-                                    // cm_helpers.points["entry_mark_opp_center"] = new Point(addPoints( entryTextOppCtr, pattern.center ))
-
-                                    // if entryLinePoint is between entry_mark_center and entryTextOppCtr, flip it
-                                    if ( 
-                                        entryLinePoint[0] > Math.min(entry_mark_center[0],entryTextOppCtr[0]) && 
-                                        entryLinePoint[0] < Math.max(entry_mark_center[0],entryTextOppCtr[0]) &&
-                                        entryLinePoint[1] > Math.min(entry_mark_center[1],entryTextOppCtr[1]) && 
-                                        entryLinePoint[1] < Math.max(entry_mark_center[1],entryTextOppCtr[1]) 
-                                    ) {
-                                        // change xml
-                                        $("sa",$newEntryText).attr("d",text_height+' '+(entryTextRotation+Math.PI));
-                                        // change text rotation
-                                        newEntryTextObj.rotation += Math.PI;
-                                        newEntryTextObj.resetBounds();
-                                    }
-                                    
-                                }
-                                if (exit_mark.length)
-                                {
-                                    // Get center for exit text element
-                                    var exit_mark_center = addPoints( exitLinePoint, multiplyPoint( normalizeVector( subtractPoint( intersectPoint,exitLinePoint) ), distance_from_edge ) );
-                                    // cm_helpers.points["exit_mark_center"] = new Point(addPoints(exit_mark_center,pattern.center));
-                                    // cm_helpers.points["exit_mark_line_pt"] = new Point(addPoints(exitLinePoint, pattern.center),"circle");
-
-                                    // Add text object
-                                    var exitTextRotation = entryIs == "2" ? lineZCobj.theta_A : lineZCobj.theta_C ;
-                                    exitTextRotation %= 2*Math.PI;
-
-                                    var newExitText = $.parseXML('<text><e/><st d="'+exit_mark+'"/><v d="'+exit_mark_center[0]+','+exit_mark_center[1]+'"/><sa d="'+text_height+' '+exitTextRotation+'"/></text>'),
-                                    $newExitText = $(newExitText.documentElement);
-                                    pattern.$el.append($newExitText);
-                                    var newExitTextObj = pattern.addTextlabel($newExitText);
-
-                                    var exitTextOppCtr = averagePoints(newExitTextObj.points[3], newExitTextObj.points[4]);
-                                    // cm_helpers.points["exit_mark_opp_center"] = new Point(addPoints( exitTextOppCtr, pattern.center ))
-
-                                    // if exitLinePoint is between exit_mark_center and exitTextOppCtr, flip it
-                                    if ( 
-                                        exitLinePoint[0] > Math.min(exit_mark_center[0],exitTextOppCtr[0]) && 
-                                        exitLinePoint[0] < Math.max(exit_mark_center[0],exitTextOppCtr[0]) &&
-                                        exitLinePoint[1] > Math.min(exit_mark_center[1],exitTextOppCtr[1]) && 
-                                        exitLinePoint[1] < Math.max(exit_mark_center[1],exitTextOppCtr[1]) 
-                                    ) {
-                                        // change xml
-                                        $("sa",$newExitText).attr("d",text_height+' '+(exitTextRotation+Math.PI));
-                                        // change text rotation
-                                        newExitTextObj.rotation += Math.PI;
-                                        newExitTextObj.resetBounds();
-
-                                    }
-                                }
-
-                            }
-                            
-                            // Check if pattern should be renamed
-                            if (rename_pattern) 
-                            {
-                                
-                                pattern.setName(corner_mark);
-                            }
-                            
-                            
-                            cm_canvas.trigger("cm.update");
-                            // trigger change with undo action
-                            cm_canvas.trigger("cm.change",function(){
-                                if ($newEntryText.length) 
-                                {
-                                    $newEntryText.remove();
-                                    
-                                }
-                            });
-                            $(this).dialog("close");
-                            
-                        }
-                        catch (e)
-                        {
-                            $.pnotify({
-                                text:e,
-                                type:"error"
-                            });
-                            console.log(e.stack);
-                            return;
-                        }
-                        
+                        return self.addMark($(this),pts1,pts2,pattern,entryIs);
                     },
                     Cancel:function()
                     {
@@ -2681,8 +2579,10 @@ var MarkTool = function(){
                 close:function(evt,ui)
                 {
                     $(this).dialog("destroy").remove();
-                    cm_canvas.trigger("enable");
-                    setCurrentTool("cursor");
+                    setTimeout(function(){
+                        self.removePreviewMarks();
+                        cm_canvas.trigger("enable");
+                    },0);
                 }
             });
             
@@ -2699,16 +2599,477 @@ var MarkTool = function(){
             
             
         } catch (e) {
+            if (temp_mark) return true;
             $.pnotify(e);
             return true;
         }
-        
     }
     
+    this.removePreviewMarks = function()
+    {
+        for (var k in cm_helpers["mark-preview"]){
+            if (typeof cm_helpers["mark-preview"][k].remove == "function") cm_helpers["mark-preview"][k].remove();
+        }
+        var test = delete cm_helpers["mark-preview"];
+        cm_canvas.trigger("cm.update");
+    }
+    
+    this.addMark = function($dialog,pts1,pts2,pattern,entryIs,temporary)
+    {
+        // Create object containing corner mark info
+        var 
+            markObj = {}, GD, theta, mu, GY, 
+            XY, ZC, lineZC, vector, center_of_text,
+            bisector_cos, newText, $newText, newTextObj,
+            arcRadius, arcStart, arcEnd, arc, $arc, arcObj,
+        
+            // Set input values
+            entry_mark = $("#entry_mark").val().toUpperCase(),
+            corner_mark = $("#corner_mark").val().toUpperCase(),
+            exit_mark = $("#exit_mark").val().toUpperCase(),
+            draw_semi = $("#draw_semi").is(":checked"),
+            distance_from_edge = $("#distance_from_edge").val() *1,
+            text_height = $("#text_height").val() *1,
+            text_rotation,
+            rename_pattern = $("#rename_pattern").prop("checked");
+        
+            // Init preview helpers
+            if (temporary) cm_helpers["mark-preview"] = {};
+        
+        try
+        {
+            // ------------------------------------
+            //  Validation:
+            // ------------------------------------
+            
+            // Check length of chars
+            if (
+                entry_mark.length > cm_settings.tools.mark.max_mark_chars ||
+                corner_mark.length > cm_settings.tools.mark.max_mark_chars ||
+                exit_mark.length > cm_settings.tools.mark.max_mark_chars
+            ) 
+                throw "Marks can contain "+cm_settings.tools.mark.max_mark_chars+" characters maximum";
+
+            // Check distance from edge and text height
+            if (distance_from_edge < cm_settings.tools.mark.min_edge_distance) throw "Distance from edge must be greater than "+cm_settings.tools.mark.min_edge_distance+".";
+            if (distance_from_edge > cm_settings.tools.mark.max_edge_distance) throw "Distance from edge must be less than "+cm_settings.tools.mark.max_edge_distance+".";
+
+            // Check if text height ok
+            if (text_height < cm_settings.tools.mark.min_label_height) throw "Label height must be greater than "+cm_settings.tools.mark.min_label_height+".";
+            if (text_height > cm_settings.tools.mark.max_label_height) throw "Label height must be less than "+cm_settings.tools.mark.max_label_height+".";
+
+            // If renaming the pattern, check that something is actually there
+            if (corner_mark.length <= 0) throw "There must always be a value for the Corner Mark label.";
+
+
+
+            // ------------------------------------
+            //  All validation has passed
+            // ------------------------------------
+            
+            // @see diagram ./mark_diagram.png
+            // Get GD, width of the corner text box
+            GD = (text_height * 3 / 4) * corner_mark.length;
+            // calculate Ø, angle of AZB
+            theta = getRadiansBetweenPts(pts1[1],pts2[1],pts1[0]);
+            // console.log("angle between sides: "+(theta/Math.PI)*180);
+            // get µ, angle of triangle GYV (or DXW)
+            mu = (Math.PI - theta)/2;
+            // console.log("angle at one corner: "+(180*mu/Math.PI));
+            // Get length of GY (or DX)
+            GY = distance_from_edge/Math.sin(mu);
+            // Get the length of XY
+            XY = GD + 2*GY;
+            // Get length of ZC
+            ZC = (XY/2) * Math.tan(mu);
+            // Get the equation for line ZC
+            lineZCobj = getAngleBisector(pts1[1],pts2[1],pts1[0],true);
+            lineZC = lineZCobj.line;
+            
+            // Mark bisecting line:
+            // for (i = pts1[0][0] - 10; i < (pts1[0][0] + 10); i++) markPoint( addPoints ( rotatePt([i,lineZC(i)],pattern.rotation),pattern.center), true);
+            
+            // Get the cosine for the angle bisector
+            bisector_cos = Math.cos(lineZCobj.phi);
+            vector = [ pts1[0][0] + ZC * (bisector_cos/Math.abs(bisector_cos)) ];
+            vector.push(lineZC(vector[0]));
+            
+            // Get center of new text object
+            var distance_from_corner = cm_settings.general.save_text_for_old_ps 
+                ? (ZC + text_height/2)
+                : ZC ;
+            center_of_text = addPoints( pts1[0], multiplyPoint( normalizeVector( subtractPoint(vector,pts1[0]) ), distance_from_corner ) );
+            text_rotation = lineZCobj.phi - Math.PI/2;
+            
+            // ----------------------------------
+            //  Add center text element
+            // ----------------------------------
+            newText = $.parseXML('<text><e/><st d="'+corner_mark+'"/><v d="'+center_of_text[0]+','+center_of_text[1]+'"/><sa d="'+text_height+' '+text_rotation+'"/></text>');
+            $newText = $(newText.documentElement);
+            newTextObj = pattern.addTextlabel($newText);
+            if (!temporary) pattern.$el.append($newText);
+            else cm_helpers["mark-preview"]["corner-text"] = newTextObj;
+            
+            
+            // ----------------------------------
+            //  Add semi-circle (arc) around this element
+            // ----------------------------------
+            if (draw_semi)
+            {
+                arcRadius = cm_settings.general.save_text_for_old_ps 
+                    ? distanceBetween(pts1[0],averagePoints(newTextObj.points[3],newTextObj.points[2])) + distance_from_edge/2
+                    : distanceBetween(pts1[0],newTextObj.points[3]) + distance_from_edge/2;
+                if (lineZCobj.correction)
+                {
+                    arcStart = lineZCobj.theta_A; // -this.start
+                    arcStop = lineZCobj.theta_C - arcStart;  // -this.end
+                    if (-arcStart < (-arcStart - arcStop))
+                    {
+                        arcStart += Math.PI*2;
+                        arcStop += Math.PI*2;
+                    }
+                    else
+                    {
+                        arcStart -= Math.PI*2;
+                        arcStop -= Math.PI*2;
+                    }
+                }
+                else
+                {
+                    arcStart = lineZCobj.theta_A; // -this.start
+                    arcStop = lineZCobj.theta_C - lineZCobj.theta_A;  // -this.end
+                }
+
+                arc = $.parseXML('<arc><e/><v d="'+pts1[0][0]+','+pts1[0][1]+'"/><sa d="'+arcRadius+' '+arcStart+' '+arcStop+'"/></arc>');
+                $arc = $(arc.documentElement);
+                newArcObj = pattern.addArc($arc);
+                if (!temporary) pattern.$el.append($arc);
+                else cm_helpers["mark-preview"]["arc"] = newArcObj;
+                
+            }
+            
+            // ----------------------------------
+            //  Side marks
+            // ----------------------------------
+            if (entry_mark.length || exit_mark.length)
+            {
+                // Init vars
+                var ZS = cm_settings.general.save_text_for_old_ps 
+                    ? distanceBetween(pts1[0],averagePoints(newTextObj.points[3],newTextObj.points[2])) + distance_from_edge
+                    : distanceBetween(pts1[0],newTextObj.points[3]) + distance_from_edge;
+                
+                // Set the mark distance, correct for old patternsmith if settings ask for it
+                var ent_exit_distance_from_edge = cm_settings.general.save_text_for_old_ps ? distance_from_edge + text_height/2 : distance_from_edge;
+
+                // ------------------------------------
+                //  entry_mark
+                // ------------------------------------
+                var enMarkWidth = (text_height * 3 / 4) * entry_mark.length;
+                var ZS_entry = ZS + enMarkWidth/2;
+                var entryLinePoints = entryIs == "1" ? pts1 : pts2 ;
+                // Get point on entry line ZS_entry away from corner
+                // get the line:
+                var entryLine = getLineEquation(entryLinePoints[0],entryLinePoints[1]);
+                // get point far away from desired point
+                
+                var entryVectorPoint = entryLinePoints[0][0] < entryLinePoints[1][0] 
+                    ? [ entryLinePoints[0][0]+1000, entryLine(entryLinePoints[0][0]+1000) ]
+                    : [ entryLinePoints[0][0]-1000, entryLine(entryLinePoints[0][0]-1000) ]
+                ;
+                // 
+                var entryLinePoint = addPoints( entryLinePoints[0], multiplyPoint( normalizeVector( subtractPoint(entryVectorPoint,entryLinePoints[0]) ), ZS_entry ) );
+                var entryLineSlope = ( entryLine(1) - entryLine(0) ) == 0 ? Infinity : -1 / ( entryLine(1) - entryLine(0) );
+                // console.log(entryLineSlope);
+                
+                // add line to helpers
+                var entryPerpLine = new Line( getLineEquation(entryLinePoint,false,entryLineSlope) );
+                // cm_helpers.lines["mark_entry_perp_line"] = entryPerpLine;
+
+
+                // ------------------------------------
+                //  exit_mark
+                // ------------------------------------
+                var exMarkWidth = (text_height * 3 / 4) * exit_mark.length;
+                var ZS_exit = ZS + exMarkWidth/2;
+                var exitLinePoints = entryIs == "1" ? pts2 : pts1 ;
+                var exitLine = getLineEquation(exitLinePoints[0],exitLinePoints[1]);
+                var exitVectorPoint = exitLinePoints[0][0] < exitLinePoints[1][0]
+                    ? [ exitLinePoints[0][0]+1000, exitLine(exitLinePoints[0][0]+1000) ]
+                    : [ exitLinePoints[0][0]-1000, exitLine(exitLinePoints[0][0]-1000) ]
+                ;
+                var exitLinePoint = addPoints (exitLinePoints[0], multiplyPoint( normalizeVector( subtractPoint(exitVectorPoint,exitLinePoints[0]) ), ZS_exit ) );
+                var exitLineSlope = (exitLine(1) - exitLine(0)) == 0 ? Infinity : -1 / (exitLine(1) - exitLine(0));
+
+                // add to helpers
+                var exitPerpLine = new Line( getLineEquation(exitLinePoint,false,exitLineSlope) );
+                // cm_helpers.lines["mark_exit_perp_line"] = exitPerpLine;
+
+                // Get intersection of the two perp lines
+                var intersectPoint = entryPerpLine.getIntersectPoint(exitPerpLine);
+
+                if (entry_mark.length)
+                {
+                    // Get center for entry text element
+                    var entry_mark_center = addPoints( entryLinePoint, multiplyPoint( normalizeVector( subtractPoint(intersectPoint,entryLinePoint) ), ent_exit_distance_from_edge ) );
+                    // cm_helpers.points["entry_mark_center"] = new Point(addPoints(entry_mark_center,pattern.center));
+                    // cm_helpers.points["entry_mark_line_pt"] = new Point(addPoints(entryLinePoint,pattern.center),"circle");
+
+                    // Add text object
+                    var entryTextRotation = entryIs == "1" ? lineZCobj.theta_A : lineZCobj.theta_C ;
+                    entryTextRotation %= 2*Math.PI;
+                    entryTextRotation += Math.PI;
+
+                    var newEntryText = $.parseXML('<text><e/><st d="'+entry_mark+'"/><v d="'+entry_mark_center[0]+','+entry_mark_center[1]+'"/><sa d="'+text_height+' '+entryTextRotation+'"/></text>'),
+                    $newEntryText = $(newEntryText.documentElement);
+                    var newEntryTextObj = pattern.addTextlabel($newEntryText);
+                    if (!temporary) pattern.$el.append($newEntryText);
+                    else cm_helpers["mark-preview"]["entry-text"] = newEntryTextObj;
+                    
+
+                    // Double check if vertical and correctly positioned
+                    var entryTextOppCtr = averagePoints(newEntryTextObj.points[3], newEntryTextObj.points[4]);
+                    // cm_helpers.points["entry_mark_opp_center"] = new Point(addPoints( entryTextOppCtr, pattern.center ))
+
+                    // if entryLinePoint is between entry_mark_center and entryTextOppCtr, flip it
+                    if ( 
+                        entryLinePoint[0] > Math.min(entry_mark_center[0],entryTextOppCtr[0]) && 
+                        entryLinePoint[0] < Math.max(entry_mark_center[0],entryTextOppCtr[0]) &&
+                        entryLinePoint[1] > Math.min(entry_mark_center[1],entryTextOppCtr[1]) && 
+                        entryLinePoint[1] < Math.max(entry_mark_center[1],entryTextOppCtr[1]) 
+                    ) {
+                        // change xml
+                        $("sa",$newEntryText).attr("d",text_height+' '+(entryTextRotation+Math.PI));
+                        // change text rotation
+                        newEntryTextObj.rotation += Math.PI;
+                        newEntryTextObj.resetBounds();
+                    }
+                    
+                }
+                if (exit_mark.length)
+                {
+                    // Get center for exit text element
+                    var exit_mark_center = addPoints( exitLinePoint, multiplyPoint( normalizeVector( subtractPoint( intersectPoint,exitLinePoint) ), ent_exit_distance_from_edge ) );
+                    // cm_helpers.points["exit_mark_center"] = new Point(addPoints(exit_mark_center,pattern.center));
+                    // cm_helpers.points["exit_mark_line_pt"] = new Point(addPoints(exitLinePoint, pattern.center),"circle");
+
+                    // Add text object
+                    var exitTextRotation = entryIs == "2" ? lineZCobj.theta_A : lineZCobj.theta_C ;
+                    exitTextRotation %= 2*Math.PI;
+
+                    var newExitText = $.parseXML('<text><e/><st d="'+exit_mark+'"/><v d="'+exit_mark_center[0]+','+exit_mark_center[1]+'"/><sa d="'+text_height+' '+exitTextRotation+'"/></text>'),
+                    $newExitText = $(newExitText.documentElement);
+                    var newExitTextObj = pattern.addTextlabel($newExitText);
+                    if (!temporary) pattern.$el.append($newExitText);
+                    else cm_helpers["mark-preview"]["exit-text"] = newExitTextObj;
+
+                    var exitTextOppCtr = averagePoints(newExitTextObj.points[3], newExitTextObj.points[4]);
+                    // cm_helpers.points["exit_mark_opp_center"] = new Point(addPoints( exitTextOppCtr, pattern.center ))
+
+                    // if exitLinePoint is between exit_mark_center and exitTextOppCtr, flip it
+                    if ( 
+                        exitLinePoint[0] > Math.min(exit_mark_center[0],exitTextOppCtr[0]) && 
+                        exitLinePoint[0] < Math.max(exit_mark_center[0],exitTextOppCtr[0]) &&
+                        exitLinePoint[1] > Math.min(exit_mark_center[1],exitTextOppCtr[1]) && 
+                        exitLinePoint[1] < Math.max(exit_mark_center[1],exitTextOppCtr[1]) 
+                    ) {
+                        // change xml
+                        $("sa",$newExitText).attr("d",text_height+' '+(exitTextRotation+Math.PI));
+                        // change text rotation
+                        newExitTextObj.rotation += Math.PI;
+                        newExitTextObj.resetBounds();
+
+                    }
+                }
+
+            }
+            
+            // Check if pattern should be renamed
+            if (rename_pattern && !temporary) 
+            {
+                pattern.setName(corner_mark);
+            }
+            
+            
+            cm_canvas.trigger("cm.update");
+            
+            if (!temporary){
+                // trigger change with undo action
+                cm_canvas.trigger("cm.change",{
+                    fn:function(args){
+                        for ( var k in args) {
+                            if (typeof args[k].remove == "function") args[k].remove();
+                        }
+                    },
+                    args:{
+                        "corner": newTextObj,
+                        "arc": newArcObj,
+                        "entry": newEntryTextObj,
+                        "exit": newExitTextObj
+                    }
+                });
+                $dialog.dialog("close");
+            }
+            
+        }
+        catch (e)
+        {
+            // if (temporary) return;
+            $.pnotify({
+                text:e,
+                type:"error"
+            });
+            return;
+        }
+    }
+    
+    this.chooseEndPoint = function(pt1, pt2, pattern_center)
+    {
+        // Disable canvas
+        cm_canvas.trigger("disable");
+        
+        // Write instructions
+        $.pnotify({
+            title: "Choose an endpoint",
+            text: "The two polylines chosen share both endpoints. Please choose one by clicking one of the buttons",
+            type:"info"
+        });
+        
+        // Add buttons for points
+        self.createChoosePtBtn(pt1,pattern_center);
+        self.createChoosePtBtn(pt2,pattern_center);
+    }
+    
+    this.createChoosePtBtn = function(pt,pattern_center)
+    {
+        // Create canvas version
+        var pt_canvas = c2s(addPoints(pt,pattern_center));
+        
+        // Add buttons with functionality to choose point
+        $("<button></button>",{
+            "class":"choose-pt-btn",
+            "text":"this point"
+        }).css({
+            "top":pt_canvas[1],
+            "left":pt_canvas[0]
+        }).on("click",function(evt){
+            
+            // enable canvas
+            cm_canvas.trigger("enable");
+            
+            // Remove all choose points buttons
+            $("button.choose-pt-btn").remove();
+            
+            // Do add corner mark action with chosen point
+            self.openMarkDialog(pt);
+            
+        }).appendTo("#canvas-disabler");
+    }
 }
 MarkTool.prototype = new Tool();
 
-
+// Label tool
+var LabelTool = function()
+{
+    var self = this;
+    
+    this.name = "label";
+    
+    this.handlers["mousedown"] = function(evt)
+    {
+        var mouse = [evt.offsetX, evt.offsetY];
+        self.openLabelDialog(mouse);
+    }
+    
+    this.addLabel = function(text,height,rotation,position)
+    {
+        var patternIdx,newText, $newText, newTextObj;
+        
+        // Change position to coordinates of psxml
+        position = s2c(position);
+        
+        if (cm_helpers["label_pattern_id"]) patternIdx = cm_helpers["label_pattern_id"];
+        else {
+            // add new pattern
+            patternIdx = project.patterns.length;
+            project.patterns.push( new Pattern(patternIdx, $('<pattern><v d="0,0" /><st d="labels" /><s d="0"/></pattern>')));
+            cm_helpers["label_pattern_id"] = patternIdx;
+        }
+        
+        // build new xml
+        newText = $.parseXML('<text><e pt="'+cm_settings.tools.label.plottype+'"/><st d="'+text+'"/><v d="'+position[0]+','+position[1]+'"/><sa d="'+height+' '+rotation+'"/></text>');
+        // jquery-ify
+        $newText = $(newText.documentElement);
+        // add to any pattern (since it has not been added to xml, it wont be saved out)
+        newTextObj = project.patterns[patternIdx].addTextlabel($newText);
+    
+        // add to undo history stack
+        cm_canvas.trigger("cm.change",{
+            fn:function(args){
+                args.remove();
+            },
+            args:newTextObj
+        });
+    }
+    
+    this.openLabelDialog = function(mouse)
+    {
+        var dialog_html = ich.label_dialog({
+            default_label_height:cm_settings.tools.label.default_label_height
+        });
+        var $dialog = $(dialog_html).dialog({
+            position:cm_settings.tools.label.dialog_placement,
+            width:250,
+            resizable:true,
+            modal:true,
+            dragStop:function(event,ui){
+                cm_settings.tools.label.dialog_placement = [
+                    ui.position.left,
+                    ui.position.top
+                ];
+                var new_setting_string = JSON.stringify(cm_settings);
+                window.localStorage["cm_settings"] = new_setting_string;
+                // put focus on text box again
+                $('form #label_text').last().focus();
+            },
+            buttons: {
+                Ok: function(){
+                    
+                    var $this = $(this);
+                    
+                    self.addLabel(
+                        $("#label_text",$this).val().toUpperCase(), 
+                        $("#label_height",$this).val().toUpperCase(),
+                        $("#label_rotation",$this).val().toUpperCase(),
+                        mouse
+                    );
+                    
+                    $this.dialog("close");
+                }
+            },
+            open: function(evt,ui){
+                // Clear keysON
+                keysOn = [];
+                var $this = $(this);
+                cm_canvas.trigger("disable");
+                
+                setTimeout(function(){ 
+					$('#label_text',$this).last().focus();
+                    $this.on("keypress",function(evt){
+                        if (evt.which == 13)
+                        {
+                            $this.parent().find('.ui-dialog-buttonpane button:first').trigger("click");
+                        }
+                    })
+				},0);
+            },
+            close: function(evt,ui){
+                $(this).dialog("destroy").remove();
+                cm_canvas.trigger("enable");
+            }
+        });
+    }
+}
+LabelTool.prototype = new Tool();
 
 
 // ----------------------------------
@@ -3198,7 +3559,7 @@ CmGui.prototype = {
 CornerMarker = new function()
 {
     // Set version of corner marker
-    this.version = "0.1.1.3";
+    this.version = "0.1.21";
     // Var to hold wait flag for redraw() function
     var wait = false,
         self = this;
@@ -3218,6 +3579,15 @@ CornerMarker = new function()
         
         cm_canvas.trigger("cm.fit_screen");
         
+        if (project.patterns.length == 0) {
+            $.pnotify({
+                title:"Welcome To Corner Marker!",
+                text: "If you are just visiting, click on the 'file' menu and choose 'Open sample file' and take a look around. Some shortcuts are: spacebar for temporary hand tool, alt/option for temporary zoom tool, 'c' for the corner marker tool, and 'v' for the basic cursor. Note: focus must be on the canvas for these to work, so click on the project window when the sample file is loaded.",
+                hide: false,
+                type: "success"
+            });
+        }
+        
     }
     
     // Initializes tools
@@ -3228,6 +3598,7 @@ CornerMarker = new function()
         cm_tools["zoom"] = new ZoomTool();
         cm_tools["hand"] = new HandTool();
         cm_tools["mark"] = new MarkTool();
+        cm_tools["label"] = new LabelTool();
         
         // Set the initial tool (cursor)
         setCurrentTool("cursor");
@@ -3261,7 +3632,9 @@ CornerMarker = new function()
             'cm.change',
             'cm.delete',
             'cm.toggle_semi_circle',
-            'cm.toggle_rename_pattern'
+            'cm.toggle_rename_pattern',
+            'cm.swap_exit_entry',
+            'cm.undo'
         ];
         cm_canvas.on(evts.join(" "),function(evt,addl){
             // Send event to current tool
@@ -3371,7 +3744,10 @@ CornerMarker = new function()
         function createKeyHandler(shortcut,action){
             return function(evt){
                 action(shortcut.name);
-                if (shortcut.stopDefault) evt.preventDefault();
+                if (shortcut.stopDefault) {
+                    evt.preventDefault();
+                    evt.stopPropagation();
+                }
             }
         }
         
@@ -3443,7 +3819,11 @@ window.onload = function()
         try {
             if ( window.localStorage["cm_settings"] != undefined && window.localStorage["cm_version"] == CornerMarker.version ) 
                 cm_settings = $.parseJSON(window.localStorage["cm_settings"]);
-            else cm_settings = cm_default_settings;
+            else {
+                cm_settings = cm_default_settings;
+                window.localStorage["cm_version"] = CornerMarker.version;
+                window.localStorage["cm_settings"] = cm_default_settings;
+            }
         } catch (e) {
             cm_settings = cm_default_settings;
         }
